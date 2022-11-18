@@ -18,7 +18,6 @@ function AppRouter() {
       location.pathname.includes("/test") ||
         location.pathname.includes("/result")
     );
-    // setUser(JSON.parse(localStorage.getItem("userDetails")) || {});
   }, [location]);
 
   return (
