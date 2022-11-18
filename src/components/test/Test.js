@@ -1,6 +1,6 @@
 import Questions from "../questions/Questions";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CountDown from "../CountDown";
 import { UserContext } from "../context/UserContext";
@@ -222,7 +222,7 @@ function Test() {
   const location = useLocation();
   const [testQuestions, setTestQuestions] = useState(allTestQuestions);
   const [question, setQuestion] = useState(testQuestions[0]);
-  const LIMIT_IN_MS = 10 * 60 * 60 * 1000 + 12 * 60 * 1000 + 15 * 1000;
+  const LIMIT_IN_MS = 5 * 1000;
   const MS = {
     HOURS: 3600000,
     MINUTES: 60000,
@@ -237,11 +237,11 @@ function Test() {
 
   useEffect(() => {
     return () => {
-      const newTime = JSON.parse(localStorage.getItem("timer"));
+      const newTime = JSON.parse(localStorage.getItem("timer")) || {};
       const newTimeInMs =
-        newTime.hours * MS.HOURS +
-        newTime.minutes * MS.MINUTES +
-        newTime.seconds * MS.SECOND;
+        newTime?.hours * MS.HOURS +
+        newTime?.minutes * MS.MINUTES +
+        newTime?.seconds * MS.SECOND;
 
       let addDetails = {
         timer: newTimeInMs + NOW_IN_MS,
@@ -336,11 +336,9 @@ function Test() {
           result: marks,
           pauseTime: `${hours}:${minutes}:${seconds}`,
           testStatus: "complete",
+          timer: 0,
         };
-        localStorage.setItem(
-          "timer",
-          JSON.stringify({ hours: 0, minutes: 0, seconds: 0 })
-        );
+        localStorage.removeItem("timer");
         contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
       }
     } else {
@@ -358,11 +356,9 @@ function Test() {
       let addDetails = {
         result: marks,
         testStatus: "complete",
+        timer: 0,
       };
-      localStorage.setItem(
-        "timer",
-        JSON.stringify({ hours: 0, minutes: 0, seconds: 0 })
-      );
+      localStorage.removeItem("timer");
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
   };
