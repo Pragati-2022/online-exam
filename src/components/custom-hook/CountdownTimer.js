@@ -1,6 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { UserContext } from "../context/UserContext";
 
 const useCountdown = (targetDate) => {
+  const contextValue = useContext(UserContext);
+  if (contextValue.newUser?.timer > 100000) {
+    targetDate = contextValue.newUser?.timer;
+  }
   let intervalId = useRef(null);
   const countDownDate = new Date(targetDate).getTime();
 
@@ -12,7 +17,6 @@ const useCountdown = (targetDate) => {
     intervalId.current = setInterval(() => {
       setCountDown(countDownDate - new Date().getTime());
     }, 1000);
-    // console.log(new Date().getTime());
     return () => clearInterval(intervalId.current);
   }, []);
 
@@ -20,8 +24,6 @@ const useCountdown = (targetDate) => {
 };
 
 const getReturnValues = (countDown, interval) => {
-  // console.log(countDown, new Date().getTime());
-  // const days = Math.floor(countDown / (1000 * 60 * 60 * 24));
   const hours = Math.floor(
     (countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
   );
