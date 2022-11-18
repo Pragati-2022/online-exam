@@ -1,11 +1,11 @@
 import Questions from "../questions/Questions";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CountDown from "../CountDown";
 import { UserContext } from "../context/UserContext";
 
-function Test(props) {
+function Test() {
   let allTestQuestions = [
     // {
     //   id: 1,
@@ -219,37 +219,82 @@ function Test(props) {
   ];
 
   const navigate = useNavigate();
-  const params = useParams();
   const location = useLocation();
   const [testQuestions, setTestQuestions] = useState(allTestQuestions);
   const [question, setQuestion] = useState(testQuestions[0]);
-  const LIMIT_IN_MS = 20 * 1000;
+  const LIMIT_IN_MS = 10 * 60 * 60 * 1000 + 12 * 60 * 1000 + 15 * 1000;
+  const MS = {
+    HOURS: 3600000,
+    MINUTES: 60000,
+    SECOND: 1000,
+  };
   const NOW_IN_MS = new Date().getTime();
-  let dateTimeAfterLimit = NOW_IN_MS + LIMIT_IN_MS;
+  const dateTimeAfterLimit = NOW_IN_MS + LIMIT_IN_MS;
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const [user, setUser] = useContext(UserContext);
+  const contextValue = useContext(UserContext);
 
   useEffect(() => {
-    if (params.id) {
-      let que = testQuestions.find((data) => data.id === parseInt(params.id));
-      setQuestion(que);
+    return () => {
+      const newTime = JSON.parse(localStorage.getItem("timer"));
+      const newTimeInMs =
+        newTime.hours * MS.HOURS +
+        newTime.minutes * MS.MINUTES +
+        newTime.seconds * MS.SECOND;
+
+      let addDetails = {
+        timer: newTimeInMs + NOW_IN_MS,
+      };
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+    };
+  }, []);
+
+  useEffect(() => {
+    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
+      navigate("/test");
     }
-  }, [params?.id]);
 
-  useEffect(() => {
-    console.log(user);
-    if (user?.email && user?.result && user?.testStatus?.toLowerCase() === "complete") {
-      navigate(`/result`);
-    } else if (!user?.email) {
-      navigate(`/register`);
-    } else if (user?.testStatus?.toLowerCase() === "inprogress") {
-      navigate(location.pathname);
-    } else if (user?.testStatus?.toLowerCase() === "onhold") {
+    if (
+      contextValue.newUser?.email &&
+      contextValue.newUser?.step === "start_test"
+    ) {
+      let addDetails = {
+        step: "quiz",
+      };
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+    }
+
+    if (!contextValue.newUser?.step) {
+      navigate("/");
+    } else if (contextValue.newUser?.step === "instruction") {
+      navigate("/register");
+    } else if (contextValue.newUser?.step === "enter_details") {
       navigate("/success");
+    } else if (
+      contextValue.newUser?.email &&
+      contextValue.newUser?.result &&
+      contextValue.newUser?.testStatus?.toLowerCase() === "complete"
+    ) {
+      navigate(`/result`);
+    } else if (
+      contextValue.newUser?.testStatus?.toLowerCase() === "inprogress"
+    ) {
+      if (location.pathname.includes("test")) {
+        navigate(location.pathname);
+      } else {
+        navigate("/test");
+      }
     }
-  }, [user]);
+  }, [contextValue.newUser, location?.pathname]);
+
+  useEffect(() => {
+    if (!hours && !minutes && !seconds) return;
+    localStorage.setItem(
+      "timer",
+      JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
+    );
+  }, [hours, minutes, seconds]);
 
   const handleQuestion = (id) => {
     setQuestion(testQuestions[id - 1]);
@@ -274,13 +319,11 @@ function Test(props) {
   };
 
   const handleSubmitTest = () => {
-    // console.log(hours, minutes, seconds);
     if (hours > 0 || minutes > 0 || seconds > 1) {
       if (window.confirm("Are you sure you want to end the test!")) {
         let marks = 0;
         testQuestions.forEach((data, index) => {
           data?.options.some((ans, index) => {
-            // console.log("some", index);
             if (ans?.value === true && ans?.title === data?.answer[0]) {
               marks = marks + data?.marks;
             }
@@ -289,21 +332,21 @@ function Test(props) {
         });
         navigate(`/result?mark=${marks}`);
 
-        let newUser = {
-          ...user,
+        let addDetails = {
           result: marks,
           pauseTime: `${hours}:${minutes}:${seconds}`,
           testStatus: "complete",
         };
-
-        localStorage.setItem("userDetails", JSON.stringify(newUser));
-        setUser(newUser);
+        localStorage.setItem(
+          "timer",
+          JSON.stringify({ hours: 0, minutes: 0, seconds: 0 })
+        );
+        contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
       }
     } else {
       let marks = 0;
       testQuestions.forEach((data, index) => {
         data?.options.some((ans, index) => {
-          console.log("some", index);
           if (ans?.value === true && ans?.title === data?.answer[0]) {
             marks = marks + data?.marks;
           }
@@ -312,19 +355,19 @@ function Test(props) {
       });
       navigate(`/result?mark=${marks}`);
 
-      let newUser = {
-        ...user,
+      let addDetails = {
         result: marks,
         testStatus: "complete",
       };
-
-      localStorage.setItem("userDetails", JSON.stringify(newUser));
-      setUser(newUser);
+      localStorage.setItem(
+        "timer",
+        JSON.stringify({ hours: 0, minutes: 0, seconds: 0 })
+      );
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
   };
 
   const handleEndTest = () => {
-    dateTimeAfterLimit = 0;
     handleSubmitTest();
   };
 
