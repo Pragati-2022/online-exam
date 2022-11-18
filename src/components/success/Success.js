@@ -1,39 +1,47 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
 function Success() {
   const navigate = useNavigate();
-  const [user, setUser] = useContext(UserContext);
+  const contextValue = useContext(UserContext);
   const location = useLocation();
 
   useEffect(() => {
-    if (
-      user?.email &&
-      user?.result &&
-      user?.testStatus?.toLowerCase() === "complete"
-    ) {
-      navigate(`/result`);
-    } else if (!user?.email) {
-      navigate(`/register`);
-    } else if (user?.testStatus?.toLowerCase() === "inprogress") {
-      navigate('/test');
+    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
+      navigate("/test");
     }
-  }, [user, location?.pathname]);
+
+    if (
+      contextValue.newUser?.email &&
+      contextValue.newUser?.step === "enter_details"
+    ) {
+      let addDetails = {
+        step: "start_test",
+      };
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+    } else if (
+      !contextValue.newUser?.email &&
+      contextValue.newUser?.step === "enter_details"
+    ) {
+      navigate("/register");
+    }
+
+    if (!contextValue.newUser?.step) {
+      navigate("/");
+    } else if (contextValue.newUser?.step === "instruction") {
+      navigate("/register");
+    }
+  }, [contextValue.newUser, location?.pathname]);
 
   const handleStartTest = () => {
-    if (user?.email) {
+    if (contextValue.newUser?.email) {
       navigate(`/test`);
-      let newUser = {
-        ...user,
+      let addDetails = {
         testStatus: "inprogress",
       };
-
-      localStorage.setItem("userDetails", JSON.stringify(newUser));
-      setUser(newUser);
-
-      console.log("user", user);
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
   };
 
