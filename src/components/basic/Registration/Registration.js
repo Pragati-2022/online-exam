@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 function Registration() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
@@ -17,45 +18,24 @@ function Registration() {
   const areaOfInterestRef = useRef(null);
   const futureGoalRef = useRef(null);
   const currentAddressRef = useRef(null);
-  const [user, setUser] = useContext(UserContext);
-  const location = useLocation();
+  const contextValue = useContext(UserContext);
 
   useEffect(() => {
-    if (
-      user?.email &&
-      !user?.result &&
-      user?.testStatus?.toLowerCase() === "onhold"
-    ) {
-      navigate(`/success`);
-    } else if (
-      user?.email &&
-      user?.result &&
-      user?.testStatus?.toLowerCase() === "complete"
-    ) {
-      navigate(`/result`);
-    } else if (
-      user?.email &&
-      !user?.result &&
-      user?.testStatus?.toLowerCase() === "inprogress"
-    ) {
+    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
       navigate("/test");
     }
-  }, [user, location]);
 
-  useEffect(() => {
-    console.log(user);
-    if (user?.email && user?.result) {
-      navigate(`/result`);
-    } else if (!user?.email) {
-      navigate(`/register`);
-    } else if (user?.testStatus?.toLowerCase() === "inprogress") {
-      navigate(location?.pathname);
-    } else if (user?.testStatus?.toLowerCase() === "onhold") {
-      navigate("/success");
-    } else if (user?.testStatus?.toLowerCase() === "complete") {
-      navigate("/result");
+    if (contextValue.newUser?.step === "instruction") {
+      let addDetails = {
+        step: "enter_details",
+      };
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
-  }, [user, location?.pathname]);
+
+    if (!contextValue.newUser?.step) {
+      navigate("/");
+    }
+  }, [contextValue.newUser, location?.pathname]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -88,16 +68,10 @@ function Registration() {
         currentAddress: currentAddressRef.current.value,
       };
 
-      let userDetails = {
+      let addDetails = {
         email: emailRef.current.value,
-        pauseTime: "",
-        testStatus: "onhold",
-        result: null,
       };
-
-      localStorage.setItem("userDetails", JSON.stringify(userDetails));
-      setUser(JSON.parse(localStorage.getItem("userDetails")) || {});
-      console.log(user);
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
   };
 
