@@ -1,16 +1,5 @@
-import { useEffect, useState } from "react";
-
 function Questions(props) {
-  useEffect(() => {
-    // console.log("effect", props.question);
-    // setQuestion(props.testQuestions.find((data) => data.id === props.id));
-    // setTimeout(() => {
-    //   console.log(question, question?.id);
-    // }, 2000)
-  }, [props.question]);
-
   const handleOnChangeCheckbox = (selectedIndex, e) => {
-    console.log(selectedIndex, props.question, e.target.checked);
     let options = props.question.options;
     options[selectedIndex].value = e.target.checked;
 
@@ -20,25 +9,9 @@ function Questions(props) {
     };
 
     props.updateQuestion(question);
-    // let options = props.question.selectedOptions;
-    // if (e.target.checked) {
-    //   options.push(props.question.options[selectedIndex]);
-    // } else {
-    //   let repeatedIndex = options.findIndex(
-    //     (data) => data === props.question.options[selectedIndex]
-    //   );
-    //   options.splice(repeatedIndex, 1);
-    // }
-
-    // setQuestion((pre) => ({
-    //   ...pre,
-    //   selectedOptions: options,
-    // }));
-    // console.log(question);
   };
 
   const handleOnChangeRadio = (selectedIndex, e) => {
-    console.log(selectedIndex, props.question, e.target.checked);
     let options = props.question.options;
     options.map(
       (data) => (data.value = data.title === e.target.value ? true : false)
@@ -48,7 +21,6 @@ function Questions(props) {
       ...props.question,
       options: options,
     };
-    console.log(question);
     props.updateQuestion(question);
   };
 
