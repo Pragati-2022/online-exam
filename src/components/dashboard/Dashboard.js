@@ -1,8 +1,4 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Header from "../common/header/Header";
-import Test from "../test/Test";
-import Success from "./../success/Success";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
@@ -27,11 +23,6 @@ function Dashboard() {
           <span>4</span> Quiz
         </h1>
       </div>
-      {/* <Routes>
-        <Route path="/" element={<Success />} />
-        <Route path="/success" element={<Success />} />
-        <Route path="/test" element={<Test />} />
-      </Routes> */}
     </>
   );
 }
