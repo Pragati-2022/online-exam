@@ -29,7 +29,12 @@ function reducer(state, action) {
 }
 
 function App() {
-  const [newUser, dispatch] = React.useReducer(reducer, initialState);
+  const [newUser, dispatch] = React.useReducer(
+    reducer,
+    JSON.parse(localStorage.getItem("userDetails"))
+      ? JSON.parse(localStorage.getItem("userDetails"))
+      : initialState
+  );
 
   useEffect(() => {
     dispatch({ type: "GET_USER" });
