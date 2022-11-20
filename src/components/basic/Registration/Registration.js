@@ -11,7 +11,7 @@ function Registration() {
 
   const firstNameRef = useRef(null);
   const middleNameRef = useRef(null);
-  const lastName = useRef(null);
+  const lastNameRef = useRef(null);
   const emailRef = useRef(null);
   const dateOfBirthRef = useRef(null);
   const educationDetailsRef = useRef(null);
@@ -23,6 +23,18 @@ function Registration() {
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
       navigate("/test");
+    }
+
+    if(contextValue.newUser?.details){
+      firstNameRef.current.value = contextValue.newUser?.details.fullName.firstName;
+      middleNameRef.current.value = contextValue.newUser?.details.fullName.middleName;
+      lastNameRef.current.value = contextValue.newUser?.details.fullName.lastName;
+      emailRef.current.value = contextValue.newUser?.details.email;
+      dateOfBirthRef.current.value = contextValue.newUser?.details.dateOfBirth;
+      educationDetailsRef.current.value = contextValue.newUser?.details.educationDetails;
+      areaOfInterestRef.current.value = contextValue.newUser?.details.areaOfInterest;
+      futureGoalRef.current.value = contextValue.newUser?.details.futureGoal;
+      currentAddressRef.current.value = contextValue.newUser?.details.currentAddress;
     }
 
     if (contextValue.newUser?.step === "instruction") {
@@ -42,7 +54,7 @@ function Registration() {
     if (
       !firstNameRef.current.value ||
       !middleNameRef.current.value ||
-      !lastName.current.value ||
+      !lastNameRef.current.value ||
       !emailRef.current.value ||
       !dateOfBirthRef.current.value ||
       !educationDetailsRef.current.value ||
@@ -59,7 +71,11 @@ function Registration() {
       navigate(`/success`);
 
       let userDetail = {
-        fullName: `${firstNameRef.current.value} ${middleNameRef.current.value} ${lastName.current.value}`,
+        fullName: {
+          firstName : firstNameRef.current.value,
+          middleName : middleNameRef.current.value,
+          lastName : lastNameRef.current.value,
+        },
         email: emailRef.current.value,
         dateOfBirth: dateOfBirthRef.current.value,
         educationDetails: educationDetailsRef.current.value,
@@ -70,6 +86,7 @@ function Registration() {
 
       let addDetails = {
         email: emailRef.current.value,
+        details: userDetail
       };
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
@@ -104,7 +121,7 @@ function Registration() {
             placeholder="LastName"
             type="text"
             className="form-control"
-            ref={lastName}
+            ref={lastNameRef}
             required
           />
         </div>
@@ -125,6 +142,7 @@ function Registration() {
           id="dateOfBirth"
           placeholder="DateOfBirth"
           type="date"
+          max={`${new Date().getFullYear()-18}-${new Date().getMonth()+1}-${new Date().getDate()}`}
           className="form-control"
           ref={dateOfBirthRef}
           required
