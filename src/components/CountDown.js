@@ -13,9 +13,9 @@ const Countdown = ({
   if (hours + minutes + seconds === 0) {
     return handleEndTest();
   } else {
-    // updateHours(hours);
-    // updateMinutes(minutes);
-    // updateSeconds(seconds);
+    updateHours(hours);
+    updateMinutes(minutes);
+    updateSeconds(seconds);
     return (
       <>
         <h1>
