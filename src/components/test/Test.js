@@ -222,7 +222,7 @@ function Test() {
   const location = useLocation();
   const [testQuestions, setTestQuestions] = useState(allTestQuestions);
   const [question, setQuestion] = useState(testQuestions[0]);
-  const LIMIT_IN_MS = 5 * 1000;
+  const LIMIT_IN_MS = 60 * 1000;
   const MS = {
     HOURS: 3600000,
     MINUTES: 60000,
@@ -290,10 +290,12 @@ function Test() {
 
   useEffect(() => {
     if (!hours && !minutes && !seconds) return;
-    localStorage.setItem(
-      "timer",
-      JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
-    );
+    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
+      localStorage.setItem(
+        "timer",
+        JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
+      );
+    }
   }, [hours, minutes, seconds]);
 
   const handleQuestion = (id) => {
@@ -367,6 +369,25 @@ function Test() {
     handleSubmitTest();
   };
 
+  const shuffleArray = (array) => {
+    let i = array.length - 1;
+    for (; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  };
+
+  const RecommendedPosts = (posts) => {
+    if (!localStorage.getItem("timer")) {
+      localStorage.setItem("que", JSON.stringify(shuffleArray(posts)));
+    }
+
+    return JSON.parse(localStorage.getItem("que")) || {};
+  };
+
   return (
     <>
       <CountDown
@@ -377,7 +398,7 @@ function Test() {
         updateSeconds={(e) => setSeconds(e)}
       />
 
-      {testQuestions.map((que, index) => (
+      {RecommendedPosts(testQuestions)?.map((que, index) => (
         <div
           key={index}
           style={{
