@@ -1,29 +1,64 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
-function Dashboard() {
-  const navigate = useNavigate();
+function Dashboard(props) {
+  const contextValue = useContext(UserContext);
+  const colorsClass = {
+    instruction: "instruction",
+    enter_details: "enter_details",
+    start_test: "start_test",
+    quiz: "quiz",
+  };
 
   const handleNext = (next) => {
-    navigate(`/${next}`);
+    // navigate(`/${next}`);
   };
   return (
-    <>
-      <div>
-        <h1 onClick={() => handleNext("")}>
-          <span>1</span> Instruction
-        </h1>
-        <h1 onClick={() => handleNext("register")}>
-          <span>2</span> Enter Details
-        </h1>
-        <h1 onClick={() => handleNext("success")}>
-          <span>3</span> Start Test
-        </h1>
-        <h1 onClick={() => handleNext("test")}>
-          <span>4</span> Quiz
-        </h1>
+    <React.Fragment>
+      <div className="steplist-main">
+        <div
+          className={[
+            "stepitem stepitem-intro",
+            colorsClass[contextValue?.newUser?.step],
+          ].join(" ")}
+          onClick={() => handleNext("")}
+        >
+          <span className="stepno">1</span>{" "}
+          <span className="label">Instruction</span>
+        </div>
+        <div
+          className={[
+            "stepitem stepitem-register",
+            colorsClass[contextValue?.newUser?.step],
+          ].join(" ")}
+          onClick={() => handleNext("register")}
+        >
+          <span className="stepno">2</span>
+          <span className="label">Enter Details</span>
+        </div>
+        <div
+          className={[
+            "stepitem stepitem-success",
+            colorsClass[contextValue?.newUser?.step],
+          ].join(" ")}
+          onClick={() => handleNext("success")}
+        >
+          <span className="stepno">3</span>
+          <span className="label">Start Test</span>
+        </div>
+        <div
+          className={[
+            "stepitem stepitem-test",
+            colorsClass[contextValue?.newUser?.step],
+          ].join(" ")}
+          onClick={() => handleNext("quiz")}
+        >
+          <span className="stepno">4</span>
+          <span className="label">Quiz</span>
+        </div>
       </div>
-    </>
+      {props.children}
+    </React.Fragment>
   );
 }
 
