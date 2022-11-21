@@ -1,26 +1,22 @@
+import logo from "./atharva-brand-logo-dark.png";
+import "../common.css";
+
 function Header() {
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container-fluid">
-          <h1>
-            Atharva System
-          </h1>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarText"
-            aria-controls="navbarText"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarText">
+      <header className="header-scn">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+          <div className="container-fluid">
+            <div className="header-inner">
+              <h1>
+                <a href="/">
+                  <img src={logo} alt="Atharva System" />
+                </a>
+              </h1>
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </header>
     </>
   );
 }
