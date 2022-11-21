@@ -1,4 +1,8 @@
+import { useParams } from "react-router-dom";
+
 function Questions(props) {
+  const params = useParams();
+
   const handleOnChangeCheckbox = (selectedIndex, e) => {
     let options = props.question.options;
     options[selectedIndex].value = e.target.checked;
@@ -26,23 +30,21 @@ function Questions(props) {
 
   return (
     <>
-      <div>
-        <div>Question {props.question?.id}</div>
-        <div>{props.question?.title}</div>
-        <div>Marks: {props.question?.marks}</div>
-        <div>
+
+<div className="question-list-main">
+        <div className="q-id">  Question {JSON.stringify(params) === "{}" ? 1 : [params["id"]]}</div>
+        <div  className="q-title">{props.question?.title}</div>
+        <div className="q-marks">Marks: {props.question?.marks}</div>
+        <ul className="question-list">
           {props.question?.options?.map((option, index) => {
             return (
               <li key={`${index}-${props.question?.id}`}>
-                <div>
-                  <div>
+              
                     {props.question?.isMultiAns ? (
                       <input
                         type="checkbox"
                         id={`custom-checkbox-${index}-${props.question?.id}`}
                         name={option?.title}
-                        // value={name}
-                        // checked={checkedState[index]}
                         checked={option?.value}
                         onChange={(e) => handleOnChangeCheckbox(index, e)}
                       />
@@ -62,12 +64,10 @@ function Questions(props) {
                     >
                       {option?.title}
                     </label>
-                  </div>
-                </div>
               </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </>
   );
