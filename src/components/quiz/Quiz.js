@@ -1,12 +1,12 @@
 import Questions from "../questions/Questions";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCallback, useContext, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CountDown from "../CountDown";
 import { UserContext } from "../context/UserContext";
 
 function Test() {
-  let allTestQuestions = [
+  const allTestQuestions = [
     // {
     //   id: 1,
     //   title: "one",
@@ -220,9 +220,9 @@ function Test() {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams();
   const [testQuestions, setTestQuestions] = useState(allTestQuestions);
-  const [question, setQuestion] = useState(testQuestions[0]);
-  const LIMIT_IN_MS = 60 * 1000;
+  const LIMIT_IN_MS = 60 * 60 * 1000;
   const MS = {
     HOURS: 3600000,
     MINUTES: 60000,
@@ -234,6 +234,12 @@ function Test() {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const contextValue = useContext(UserContext);
+
+  const [question, setQuestion] = useState(
+    JSON.stringify(params) === "{}"
+      ? testQuestions[0]
+      : testQuestions[parseInt(params.id - 1)]
+  );
 
   useEffect(() => {
     return () => {
@@ -252,7 +258,7 @@ function Test() {
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
-      navigate("/test");
+      navigate("/quiz");
     }
 
     if (
@@ -270,7 +276,7 @@ function Test() {
     } else if (contextValue.newUser?.step === "instruction") {
       navigate("/register");
     } else if (contextValue.newUser?.step === "enter_details") {
-      navigate("/success");
+      navigate("/star_test");
     } else if (
       contextValue.newUser?.email &&
       contextValue.newUser?.result &&
@@ -280,10 +286,10 @@ function Test() {
     } else if (
       contextValue.newUser?.testStatus?.toLowerCase() === "inprogress"
     ) {
-      if (location.pathname.includes("test")) {
+      if (location.pathname.includes("quiz")) {
         navigate(location.pathname);
       } else {
-        navigate("/test");
+        navigate("/quiz");
       }
     }
   }, [contextValue.newUser, location?.pathname]);
@@ -298,9 +304,24 @@ function Test() {
     }
   }, [hours, minutes, seconds]);
 
-  const handleQuestion = (id) => {
-    setQuestion(testQuestions[id - 1]);
-    navigate(`/test/${id}`);
+  const handleQuestion = (id, index) => {
+    let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
+    setQuestion(testQuestions[selectedQueIndex]);
+    navigate(`/quiz/${index + 1}`);
+  };
+
+  const handlePreQuestion = (id) => {
+    console.log(id);
+    let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
+    console.log(testQuestions[selectedQueIndex]);
+    setQuestion(testQuestions[selectedQueIndex - 1]);
+    navigate(`/quiz/${selectedQueIndex}`);
+  };
+
+  const handleNextQuestion = (id, index) => {
+    let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
+    setQuestion(testQuestions[selectedQueIndex + 1]);
+    navigate(`/quiz/${selectedQueIndex + 2}`);
   };
 
   const updateQuestion = (que) => {
@@ -313,11 +334,13 @@ function Test() {
     });
 
     setTestQuestions(newTestQuestions);
-    testQuestions.some((data) => {
-      return data.options.some((data) => {
-        return data.value;
-      });
-    });
+    // testQuestions.some((data) => {
+    //   return data.options.some((data) => {
+    //     return data.value;
+    //   });
+    // });
+
+    console.log(testQuestions);
   };
 
   const handleSubmitTest = () => {
@@ -369,72 +392,71 @@ function Test() {
     handleSubmitTest();
   };
 
-  const shuffleArray = (array) => {
-    let i = array.length - 1;
-    for (; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
-    return array;
-  };
-
-  const RecommendedPosts = (posts) => {
-    if (!localStorage.getItem("timer")) {
-      localStorage.setItem("que", JSON.stringify(shuffleArray(posts)));
-    }
-
-    return JSON.parse(localStorage.getItem("que")) || {};
-  };
-
   return (
     <>
-      <CountDown
-        targetTime={dateTimeAfterLimit}
-        handleEndTest={handleEndTest}
-        updateHours={(e) => setHours(e)}
-        updateMinutes={(e) => setMinutes(e)}
-        updateSeconds={(e) => setSeconds(e)}
-      />
+      <div className="countdown">
+        <CountDown
+          targetTime={dateTimeAfterLimit}
+          handleEndTest={handleEndTest}
+          updateHours={(e) => setHours(e)}
+          updateMinutes={(e) => setMinutes(e)}
+          updateSeconds={(e) => setSeconds(e)}
+        />
+      </div>
 
-      {RecommendedPosts(testQuestions)?.map((que, index) => (
-        <div
-          key={index}
-          style={{
-            backgroundColor: que.options.some((data) => data.value)
-              ? "green"
-              : "none",
-          }}
-        >
-          <div onClick={() => handleQuestion(que?.id)}>{que?.id}</div>
+      <div className="qno-listmain">
+        {testQuestions?.map((que, index) => (
+          <div
+            key={index}
+            className={
+              que.options.some((data) => data.value)
+                ? "qno-item qno-done"
+                : "qno-item"
+            }
+          >
+            <div
+              className="qno-no"
+              onClick={() => handleQuestion(que.id, index)}
+            >
+              {index + 1}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="testgroup-main">
+        <div className="testgroup-inner">
+          {" "}
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={() => handleSubmitTest()}
+          >
+            End Test
+          </button>
+          <Questions question={question} updateQuestion={updateQuestion} />
+          <div className="prev-next-group">
+            <button
+              type="button"
+              disabled={parseInt(question?.id) === testQuestions[0]?.id}
+              onClick={() => handlePreQuestion(parseInt(question?.id))}
+              className="btn btn-primary"
+            >
+              pre
+            </button>
+            <button
+              type="submit"
+              disabled={
+                parseInt(question?.id) ===
+                testQuestions[testQuestions?.length - 1]?.id
+              }
+              onClick={() => handleNextQuestion(parseInt(question?.id))}
+              className="btn btn-primary"
+            >
+              next
+            </button>
+          </div>
         </div>
-      ))}
-      <button
-        type="button"
-        className="btn btn-danger"
-        onClick={() => handleSubmitTest()}
-      >
-        End Test
-      </button>
-      <Questions question={question} updateQuestion={updateQuestion} />
-
-      <button
-        type="button"
-        disabled={parseInt(question.id) === 1}
-        onClick={() => handleQuestion(parseInt(question.id) - 1)}
-        className="btn btn-primary"
-      >
-        pre
-      </button>
-      <button
-        type="submit"
-        disabled={parseInt(question.id) === testQuestions.length}
-        onClick={() => handleQuestion(parseInt(question.id) + 1)}
-        className="btn btn-primary"
-      >
-        next
-      </button>
+      </div>
       {/* {parseInt(question.id === testQuestions.length) ||
       testQuestions.every((data) => {
         return data.options.some((data) => {
