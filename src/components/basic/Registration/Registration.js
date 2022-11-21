@@ -22,19 +22,25 @@ function Registration() {
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
-      navigate("/test");
+      navigate("/quiz");
     }
 
-    if(contextValue.newUser?.details){
-      firstNameRef.current.value = contextValue.newUser?.details.fullName.firstName;
-      middleNameRef.current.value = contextValue.newUser?.details.fullName.middleName;
-      lastNameRef.current.value = contextValue.newUser?.details.fullName.lastName;
+    if (contextValue.newUser?.details) {
+      firstNameRef.current.value =
+        contextValue.newUser?.details.fullName.firstName;
+      middleNameRef.current.value =
+        contextValue.newUser?.details.fullName.middleName;
+      lastNameRef.current.value =
+        contextValue.newUser?.details.fullName.lastName;
       emailRef.current.value = contextValue.newUser?.details.email;
       dateOfBirthRef.current.value = contextValue.newUser?.details.dateOfBirth;
-      educationDetailsRef.current.value = contextValue.newUser?.details.educationDetails;
-      areaOfInterestRef.current.value = contextValue.newUser?.details.areaOfInterest;
+      educationDetailsRef.current.value =
+        contextValue.newUser?.details.educationDetails;
+      areaOfInterestRef.current.value =
+        contextValue.newUser?.details.areaOfInterest;
       futureGoalRef.current.value = contextValue.newUser?.details.futureGoal;
-      currentAddressRef.current.value = contextValue.newUser?.details.currentAddress;
+      currentAddressRef.current.value =
+        contextValue.newUser?.details.currentAddress;
     }
 
     if (contextValue.newUser?.step === "instruction") {
@@ -68,13 +74,13 @@ function Registration() {
       setSuccess("Register successful");
       setError("");
 
-      navigate(`/success`);
+      navigate(`/star_test`);
 
       let userDetail = {
         fullName: {
-          firstName : firstNameRef.current.value,
-          middleName : middleNameRef.current.value,
-          lastName : lastNameRef.current.value,
+          firstName: firstNameRef.current.value,
+          middleName: middleNameRef.current.value,
+          lastName: lastNameRef.current.value,
         },
         email: emailRef.current.value,
         dateOfBirth: dateOfBirthRef.current.value,
@@ -86,7 +92,7 @@ function Registration() {
 
       let addDetails = {
         email: emailRef.current.value,
-        details: userDetail
+        details: userDetail,
       };
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
@@ -94,105 +100,151 @@ function Registration() {
 
   return (
     <>
-      <h1> Registration </h1>
-
-      <form onSubmit={(e) => onSubmit(e)}>
-        <label>Full Name</label>
-        <br />
-        <div>
-          <input
-            id="firstName"
-            placeholder="FirstName"
-            type="text"
-            className="form-control"
-            ref={firstNameRef}
-            required
-          />{" "}
-          <input
-            id="middleName"
-            placeholder="MiddleName"
-            type="text"
-            className="form-control"
-            ref={middleNameRef}
-            required
-          />{" "}
-          <input
-            id="lastName"
-            placeholder="LastName"
-            type="text"
-            className="form-control"
-            ref={lastNameRef}
-            required
-          />
-        </div>
-        <label htmlFor="email">Email Address</label>
-        <br />
-        <input
-          id="email"
-          placeholder="Email"
-          type="email"
-          className="form-control"
-          ref={emailRef}
-          required
-          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-        />
-        <label htmlFor="dateOfBirth">Date Of Birth</label>
-        <br />
-        <input
-          id="dateOfBirth"
-          placeholder="DateOfBirth"
-          type="date"
-          max={`${new Date().getFullYear()-18}-${new Date().getMonth()+1}-${new Date().getDate()}`}
-          className="form-control"
-          ref={dateOfBirthRef}
-          required
-        />
-        <label htmlFor="educationDetails">
-          Education Details : Last Semester Grade (CGPA)
-        </label>
-        <br />
-        <textarea
-          id="educationDetails"
-          placeholder="EducationDetails"
-          className="form-control"
-          ref={educationDetailsRef}
-          required
-        ></textarea>
-        <label htmlFor="areaOfInterest">Area of Interest</label>
-        <br />
-        <textarea
-          id="areaOfInterest"
-          placeholder="AreaOfInterest"
-          className="form-control"
-          ref={areaOfInterestRef}
-          required
-        ></textarea>
-        <label htmlFor="futureGoal">Future Goal</label>
-        <br />
-        <textarea
-          id="futureGoal"
-          placeholder="FutureGoal"
-          className="form-control"
-          ref={futureGoalRef}
-          required
-        ></textarea>
-        <label htmlFor="currentAddress">Current Address</label>
-        <br />
-        <textarea
-          id="currentAddress"
-          placeholder="CurrentAddress"
-          className="form-control"
-          ref={currentAddressRef}
-          required
-        ></textarea>
-
-        <button type="submit" className="btn btn-success">
-          Submit
-        </button>
-
-        {success ? <div className="text-success">{success}</div> : null}
-        {error ? <div className="text-danger">{error}</div> : null}
-      </form>
+      <div className="registration-from-main">
+        <h2>Registration</h2>
+        <form className="registration-from" onSubmit={(e) => onSubmit(e)}>
+          <div className="rgstr-from-group">
+            <div className="form-group form-group3">
+              <label htmlFor="firstName">Full Name</label>
+              <div className="form-group-inner">
+                <div className="cmn-form-control">
+                  {/* <span className="form-tagname">Firstname</span> */}
+                  <input
+                    id="firstName"
+                    placeholder="FirstName"
+                    type="text"
+                    className="form-control"
+                    ref={firstNameRef}
+                    required
+                  />
+                </div>
+                <div className="cmn-form-control">
+                  {/* <span className="form-tagname">Middlename</span> */}
+                  <input
+                    id="middleName"
+                    placeholder="MiddleName"
+                    type="text"
+                    className="form-control"
+                    ref={middleNameRef}
+                    required
+                  />
+                </div>
+                <div className="cmn-form-control">
+                  {/* <span className="form-tagname">Lastname</span> */}
+                  <input
+                    id="lastName"
+                    placeholder="LastName"
+                    type="text"
+                    className="form-control"
+                    ref={lastNameRef}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <label htmlFor="dateOfBirth">Date of Birth</label>
+              <div className="form-group-inner">
+                <div className="cmn-form-control">
+                  {/* <span className="form-tagname">Date</span> */}
+                  <input
+                    id="dateOfBirth"
+                    placeholder="DateOfBirth"
+                    type="date"
+                    className="form-control"
+                    max={`${new Date().getFullYear() - 18}-${
+                      new Date().getMonth() + 1
+                    }-${new Date().getDate()}`}
+                    ref={dateOfBirthRef}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="form-group ">
+              <label htmlFor="">Email Address</label>
+              <div className="form-group-inner">
+                <div className="cmn-form-control">
+                  <input
+                    id="email"
+                    placeholder="Email"
+                    type="email"
+                    className="form-control"
+                    ref={emailRef}
+                    required
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <label htmlFor="currentAddress">Current Address</label>
+              <div className="form-group-inner">
+                <div className="cmn-form-control">
+                  <textarea
+                    id="currentAddress"
+                    placeholder="CurrentAddress"
+                    className="form-control"
+                    ref={currentAddressRef}
+                    required
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <label htmlFor="educationDetails">
+                Education Details : Last Semester Grade
+              </label>
+              <div className="form-group-inner">
+                <div className="cmn-form-control">
+                  <textarea
+                    id="educationDetails"
+                    placeholder="EducationDetails"
+                    className="form-control"
+                    ref={educationDetailsRef}
+                    required
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <label htmlFor="areaOfInterest">Area of Interest</label>
+              <div className="form-group-inner">
+                <div className="cmn-form-control">
+                  <textarea
+                    id="areaOfInterest"
+                    placeholder="AreaOfInterest"
+                    className="form-control"
+                    ref={areaOfInterestRef}
+                    required
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <label htmlFor="futureGoal">Future Goal</label>
+              <div className="form-group-inner">
+                <div className="cmn-form-control">
+                  <textarea
+                    id="futureGoal"
+                    placeholder="FutureGoal"
+                    className="form-control"
+                    ref={futureGoalRef}
+                    required
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <button type="submit" className="cmn-btn submit-btn">
+                Submit
+              </button>
+            </div>
+          </div>
+          {success ? <div className="text-success">{success}</div> : null}
+          {error ? <div className="text-danger">{error}</div> : null}
+        </form>
+      </div>
     </>
   );
 }
