@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
-function Home() {
+function Instruction() {
   const navigate = useNavigate();
   const location = useLocation();
   const contextValue = useContext(UserContext);
@@ -14,7 +14,7 @@ function Home() {
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
-      navigate("/test");
+      navigate("/quiz");
     }
 
     if (!contextValue.newUser?.step) {
@@ -31,7 +31,13 @@ function Home() {
 
   return (
     <>
-      <h1>Home</h1>
+      <div className="homepage-main">
+        <div className="container">
+          <div className="homepage-inner">
+            <h2>Home page Here</h2>
+          </div>
+        </div>
+      </div>
       <button
         type="submit"
         className="btn btn-success"
@@ -43,4 +49,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Instruction;
