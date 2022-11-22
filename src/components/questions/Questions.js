@@ -1,7 +1,18 @@
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Questions(props) {
   const params = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (
+      JSON.stringify(params) !== "{}" &&
+      params["id"] !== props.questions?.index
+    ) {
+      navigate("/test/1");
+    }
+  }, [params["id"]]);
 
   const handleOnChangeCheckbox = (selectedIndex, e) => {
     let options = props.question.options;
@@ -30,40 +41,38 @@ function Questions(props) {
 
   return (
     <>
-
-<div className="question-list-main">
-        <div className="q-id">  Question {JSON.stringify(params) === "{}" ? 1 : [params["id"]]}</div>
-        <div  className="q-title">{props.question?.title}</div>
+      <div className="question-list-main">
+        <div className="q-id"> Question {props.question?.index + 1}</div>
+        <div className="q-title">{props.question?.title}</div>
         <div className="q-marks">Marks: {props.question?.marks}</div>
         <ul className="question-list">
           {props.question?.options?.map((option, index) => {
             return (
               <li key={`${index}-${props.question?.id}`}>
-              
-                    {props.question?.isMultiAns ? (
-                      <input
-                        type="checkbox"
-                        id={`custom-checkbox-${index}-${props.question?.id}`}
-                        name={option?.title}
-                        checked={option?.value}
-                        onChange={(e) => handleOnChangeCheckbox(index, e)}
-                      />
-                    ) : (
-                      <input
-                        type="radio"
-                        value={option?.title}
-                        id={`custom-checkbox-${index}-${props.question?.id}`}
-                        name="gender"
-                        checked={option?.value}
-                        onChange={(e) => handleOnChangeRadio(index, e)}
-                      />
-                    )}
+                {props.question?.isMultiAns ? (
+                  <input
+                    type="checkbox"
+                    id={`custom-checkbox-${index}-${props.question?.id}`}
+                    name={option?.title}
+                    checked={option?.value}
+                    onChange={(e) => handleOnChangeCheckbox(index, e)}
+                  />
+                ) : (
+                  <input
+                    type="radio"
+                    value={option?.title}
+                    id={`custom-checkbox-${index}-${props.question?.id}`}
+                    name="gender"
+                    checked={option?.value}
+                    onChange={(e) => handleOnChangeRadio(index, e)}
+                  />
+                )}
 
-                    <label
-                      htmlFor={`custom-checkbox-${index}-${props.question?.id}`}
-                    >
-                      {option?.title}
-                    </label>
+                <label
+                  htmlFor={`custom-checkbox-${index}-${props.question?.id}`}
+                >
+                  {option?.title}
+                </label>
               </li>
             );
           })}
