@@ -13,10 +13,10 @@ function Result() {
     }
 
     if (contextValue.newUser?.email && contextValue.newUser?.step === "quiz") {
-      // let addDetails = {
-      //   step: "final",
-      // };
-      // contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+      let addDetails = {
+        step: "final",
+      };
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
 
     if (!contextValue.newUser?.step) {
