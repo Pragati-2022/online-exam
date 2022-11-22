@@ -8,6 +8,7 @@ function Dashboard(props) {
     enter_details: "enter_details",
     start_test: "start_test",
     quiz: "quiz",
+    final: "final",
   };
 
   const handleNext = (next) => {
@@ -57,7 +58,6 @@ function Dashboard(props) {
           <span className="label">Quiz</span>
         </div>
       </div>
-      {props.children}
     </React.Fragment>
   );
 }
