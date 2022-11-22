@@ -235,10 +235,18 @@ function Test() {
   const [seconds, setSeconds] = useState(0);
   const contextValue = useContext(UserContext);
 
+  const getQuestionWithIndex = () => {
+    const que = testQuestions[parseInt(params.id) - 1];
+    return que ? parseInt(params.id) - 1 : 0;
+  };
+
   const [question, setQuestion] = useState(
     JSON.stringify(params) === "{}"
-      ? testQuestions[0]
-      : testQuestions[parseInt(params.id - 1)]
+      ? { ...testQuestions[0], index: 0 }
+      : {
+          ...testQuestions[getQuestionWithIndex()],
+          index: getQuestionWithIndex(),
+        }
   );
 
   useEffect(() => {
@@ -306,7 +314,10 @@ function Test() {
 
   const handleQuestion = (id, index) => {
     let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
-    setQuestion(testQuestions[selectedQueIndex]);
+    setQuestion({
+      ...testQuestions[selectedQueIndex],
+      index: selectedQueIndex,
+    });
     navigate(`/quiz/${index + 1}`);
   };
 
@@ -314,13 +325,19 @@ function Test() {
     console.log(id);
     let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
     console.log(testQuestions[selectedQueIndex]);
-    setQuestion(testQuestions[selectedQueIndex - 1]);
+    setQuestion({
+      ...testQuestions[selectedQueIndex - 1],
+      index: selectedQueIndex - 1,
+    });
     navigate(`/quiz/${selectedQueIndex}`);
   };
 
   const handleNextQuestion = (id, index) => {
     let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
-    setQuestion(testQuestions[selectedQueIndex + 1]);
+    setQuestion({
+      ...testQuestions[selectedQueIndex + 1],
+      index: selectedQueIndex + 1,
+    });
     navigate(`/quiz/${selectedQueIndex + 2}`);
   };
 
@@ -339,8 +356,6 @@ function Test() {
     //     return data.value;
     //   });
     // });
-
-    console.log(testQuestions);
   };
 
   const handleSubmitTest = () => {
