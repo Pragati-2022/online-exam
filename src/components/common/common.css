@@ -271,10 +271,13 @@ body {
 .stepitem-intro.enter_details,
 .stepitem-intro.start_test,
 .stepitem-intro.quiz,
+.stepitem-intro.final,
 .stepitem-register.start_test,
 .stepitem-register.quiz,
-.stepitem-success.quiz
-{
+.stepitem-register.final,
+.stepitem-success.quiz,
+.stepitem-success.final,
+.stepitem-test.final{
     color: #69aa5c;
 }
 
@@ -289,9 +292,13 @@ body {
 .stepitem-intro.enter_details .stepno,
 .stepitem-intro.start_test .stepno,
 .stepitem-intro.quiz .stepno,
+.stepitem-intro.final .stepno,
 .stepitem-register.start_test .stepno,
 .stepitem-register.quiz .stepno,
-.stepitem-success.quiz .stepno {
+.stepitem-register.final .stepno,
+.stepitem-success.quiz .stepno,
+.stepitem-success.final .stepno,
+.stepitem-test.final .stepno {
     background-color: #69aa5c;
     font-size: 0px;
 }
@@ -299,9 +306,13 @@ body {
 .stepitem-intro.enter_details .stepno:before,
 .stepitem-intro.start_test .stepno:before,
 .stepitem-intro.quiz .stepno:before,
+.stepitem-intro.final .stepno:before,
 .stepitem-register.start_test .stepno:before,
 .stepitem-register.quiz .stepno:before,
-.stepitem-success.quiz .stepno:before {
+.stepitem-register.final .stepno:before,
+.stepitem-success.quiz .stepno:before, 
+.stepitem-success.final .stepno:before, 
+.stepitem-test.final .stepno:before {
     content: '';
     position: absolute;
     left: 4px;
