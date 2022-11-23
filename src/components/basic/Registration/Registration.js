@@ -23,6 +23,8 @@ function Registration() {
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
       navigate("/quiz");
+    }  else if (contextValue.newUser?.testStatus?.toLowerCase() === "complete") {
+      navigate("/result");
     }
 
     if (contextValue.newUser?.details) {
@@ -48,6 +50,8 @@ function Registration() {
         step: "enter_details",
       };
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+    } else if (contextValue.newUser?.step === "start_test") {
+      navigate("/start_test");
     }
 
     if (!contextValue.newUser?.step) {
@@ -74,7 +78,7 @@ function Registration() {
       setSuccess("Register successful");
       setError("");
 
-      navigate(`/star_test`);
+      navigate(`/start_test`);
 
       let userDetail = {
         fullName: {
