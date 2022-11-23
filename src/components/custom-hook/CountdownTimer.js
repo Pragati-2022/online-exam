@@ -1,24 +1,27 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../context/UserContext";
 
-const useCountdown = (targetDate) => {
+const NOW_IN_MS = new Date().getTime();
+
+const useCountdown = (targetTime) => {
   const contextValue = useContext(UserContext);
-  if (contextValue.newUser?.timer > 100000) {
-    targetDate = contextValue.newUser?.timer;
+  const TIMER_IN_MS = NOW_IN_MS + contextValue.newUser?.timer;
+  if (contextValue.newUser?.timer > 0) {
+    targetTime = TIMER_IN_MS;
   }
   let intervalId = useRef(null);
-  const countDownDate = new Date(targetDate).getTime();
+  var countDownTime = new Date(targetTime).getTime();
 
   const [countDown, setCountDown] = useState(
-    countDownDate - new Date().getTime()
+    countDownTime - new Date().getTime()
   );
 
   useEffect(() => {
     intervalId.current = setInterval(() => {
-      setCountDown(countDownDate - new Date().getTime());
+      setCountDown(countDownTime - new Date().getTime());
     }, 1000);
     return () => clearInterval(intervalId.current);
-  }, []);
+  }, [contextValue.newUser?.timer ? targetTime : null]);
 
   return getReturnValues(countDown, intervalId.current);
 };
@@ -33,7 +36,12 @@ const getReturnValues = (countDown, interval) => {
   if (hours + minutes + seconds <= 0) {
     clearInterval(interval);
     return [0, 0, 0];
-  } else return [hours, minutes, seconds];
+  } else
+    return [
+      hours < 10 ? "0" + hours : hours,
+      minutes < 10 ? "0" + minutes : minutes,
+      seconds < 10 ? "0" + seconds : seconds,
+    ];
 };
 
 export { useCountdown };
