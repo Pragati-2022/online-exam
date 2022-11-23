@@ -1,228 +1,46 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import Countdown from "../CountDown";
 
 function StartTest() {
-  const allTestQuestions = [
-    // {
-    //   id: 1,
-    //   title: "one",
-    //   options: [
-    //     {
-    //       title: "A",
-    //       value: false,
-    //     },
-    //     {
-    //       title: "B",
-    //       value: true,
-    //     },
-    //     {
-    //       title: "C",
-    //       value: true,
-    //     },
-    //     {
-    //       title: "D",
-    //       value: false,
-    //     },
-    //   ],
-    //   answer: ["A", "B"],
-    //   selectedOptions: [],
-    //   marks: 5,
-    //   review: false,
-    //   isMultiAns: true,
-    // },
-    {
-      id: 1,
-      title: "one",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: true,
-        },
-        {
-          title: "C",
-          value: false,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["A"],
-      selectedOptions: [],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 2,
-      title: "two",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: true,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["C"],
-      selectedOptions: [],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 3,
-      title: "three",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: true,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["A"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 4,
-      title: "four",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: false,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["B"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 5,
-      title: "five",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: false,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["B"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 6,
-      title: "six",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: true,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["C"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 7,
-      title: "seven",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: false,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["A"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-  ];
-
+  const LIMIT_IN_MS = 20 * 1000;
+  const NOW_IN_MS = new Date().getTime();
+  const dateTimeAfterLimit = NOW_IN_MS + LIMIT_IN_MS;
+  const MS = {
+    HOURS: 3600000,
+    MINUTES: 60000,
+    SECOND: 1000,
+  };
   const navigate = useNavigate();
   const contextValue = useContext(UserContext);
   const location = useLocation();
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    return () => {
+      const newTime = JSON.parse(localStorage.getItem("timer")) || {};
+      const newTimeInMs =
+        newTime?.hours * MS.HOURS +
+        newTime?.minutes * MS.MINUTES +
+        newTime?.seconds * MS.SECOND;
+
+      let addDetails = {
+        timer: newTimeInMs,
+        newTime: newTime,
+      };
+      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+    };
+  }, []);
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
       navigate("/quiz");
+    } else if (contextValue.newUser?.testStatus?.toLowerCase() === "complete") {
+      navigate("/result");
     }
 
     if (
@@ -247,20 +65,18 @@ function StartTest() {
     }
   }, [contextValue.newUser, location?.pathname]);
 
-  const shuffleArray = (array) => {
-    let i = array.length - 1;
-    for (; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
+  useEffect(() => {
+    if (!hours && !minutes && !seconds) return;
+    if (
+      contextValue.newUser?.step?.toLowerCase() === "start_test" &&
+      !contextValue.newUser?.startTestDelay
+    ) {
+      localStorage.setItem(
+        "timer",
+        JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
+      );
     }
-    return array;
-  };
-
-  const RecommendedPosts = (posts) => {
-    return shuffleArray(posts);
-  };
+  }, [hours, minutes, seconds]);
 
   const handleStartTest = () => {
     if (
@@ -275,19 +91,59 @@ function StartTest() {
     } else if (contextValue.newUser?.testStatus === "complete") {
       navigate(`/result`);
     }
+
+    let addDetails = {
+      timer: 0,
+      startTestDelay: true,
+    };
+    localStorage.removeItem("timer");
+    contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+  };
+
+  const handleEndTest = () => {
+    let addDetails = {
+      timer: 0,
+      startTestDelay: true,
+    };
+    localStorage.removeItem("timer");
+    contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
   };
 
   return (
     <>
+      <div></div>
       <div className="cng-success-fix">
-        <h2>Congratulations! Successfully registered!</h2>
-        <button
-          type="submit"
-          className="btn btn-success"
-          onClick={() => handleStartTest()}
-        >
-          Start Test
-        </button>
+        {/* <h2>Congratulations! Successfully registered!</h2> */}
+        <h5>
+          <strong> Use this time to read the instructions</strong>
+        </h5>
+        <hr />
+
+        <div className="card text-center">
+          <div className="card-body">
+            <div className="card-text mt-3">
+              You can start solving problem in
+              <span>
+               { !contextValue.newUser?.startTestDelay ? <Countdown
+                  targetTime={dateTimeAfterLimit}
+                  handleEndTest={handleEndTest}
+                  updateHours={(e) => setHours(e)}
+                  updateMinutes={(e) => setMinutes(e)}
+                  updateSeconds={(e) => setSeconds(e)}
+                /> : null }
+                {hours + minutes + seconds == 1 || contextValue.newUser?.startTestDelay ? <span> now</span> : null}
+              </span>
+            </div>
+            <button
+              type="submit"
+              className="btn btn-success mt-2"
+              disabled={!(hours + minutes + seconds <= 1) || !contextValue.newUser?.startTestDelay}
+              onClick={() => handleStartTest()}
+            >
+              Start Test
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );
