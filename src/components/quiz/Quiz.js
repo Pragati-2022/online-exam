@@ -258,7 +258,7 @@ function Test() {
         newTime?.seconds * MS.SECOND;
 
       let addDetails = {
-        timer: newTimeInMs + NOW_IN_MS,
+        timer: newTimeInMs
       };
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     };
@@ -271,7 +271,8 @@ function Test() {
 
     if (
       contextValue.newUser?.email &&
-      contextValue.newUser?.step === "start_test"
+      contextValue.newUser?.step === "start_test" &&
+      contextValue.newUser?.testStatus?.toLowerCase() === "inprogress"
     ) {
       let addDetails = {
         step: "quiz",
@@ -279,12 +280,15 @@ function Test() {
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
 
-    if (!contextValue.newUser?.step) {
+    if (
+      !contextValue.newUser?.step ||
+      contextValue.newUser?.step === "instruction"
+    ) {
       navigate("/");
-    } else if (contextValue.newUser?.step === "instruction") {
-      navigate("/register");
     } else if (contextValue.newUser?.step === "enter_details") {
-      navigate("/star_test");
+      navigate("/register");
+    } else if (contextValue.newUser?.step === "start_test") {
+      navigate("/start_test");
     } else if (
       contextValue.newUser?.email &&
       contextValue.newUser?.result &&
@@ -332,7 +336,7 @@ function Test() {
     navigate(`/quiz/${selectedQueIndex}`);
   };
 
-  const handleNextQuestion = (id, index) => {
+  const handleNextQuestion = (id) => {
     let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
     setQuestion({
       ...testQuestions[selectedQueIndex + 1],
