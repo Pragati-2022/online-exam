@@ -1,4 +1,5 @@
 import "./App.css";
+import NotFoundImg from "./images/404.png";
 import Registration from "./components/basic/Registration/Registration";
 import React, { useContext, useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
@@ -20,7 +21,13 @@ function NotFound() {
     }
   }, [contextValue.newUser, location?.pathname]);
 
-  return <h3>Not Found</h3>;
+  return (
+    <>
+      <div className="d-flex align-items-center justify-content-center h-100 mt-5">
+        <img src={NotFoundImg} alt="NotFound" />
+      </div>
+    </>
+  );
 }
 
 function AppRouter(props) {
@@ -62,7 +69,7 @@ function AppRouter(props) {
           }
         />
         <Route
-          path="/star_test"
+          path="/start_test"
           element={
             <React.Fragment>
               <Dashboard />
