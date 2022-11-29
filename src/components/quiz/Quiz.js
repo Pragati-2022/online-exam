@@ -374,7 +374,7 @@ function Test() {
             return ans?.value;
           });
         });
-        navigate(`/result?mark=${marks}`);
+        navigate(`/result`);
 
         let addDetails = {
           result: marks,
