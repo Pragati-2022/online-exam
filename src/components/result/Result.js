@@ -28,7 +28,7 @@ function Result() {
 
   return (
     <>
-      <h1>Result {contextValue.newUser?.result}</h1>
+      <h1>You are completed test successfully!</h1>
     </>
   );
 }
