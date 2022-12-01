@@ -22,15 +22,14 @@ function StartTest() {
 
   useEffect(() => {
     return () => {
-      const newTime = JSON.parse(localStorage.getItem("timer")) || {};
+      const newTime = JSON.parse(localStorage.getItem("startTesttimer")) || {};
       const newTimeInMs =
         newTime?.hours * MS.HOURS +
         newTime?.minutes * MS.MINUTES +
         newTime?.seconds * MS.SECOND;
 
       let addDetails = {
-        timer: newTimeInMs,
-        newTime: newTime,
+        timer: newTimeInMs + NOW_IN_MS,
       };
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     };
@@ -39,7 +38,7 @@ function StartTest() {
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
       navigate("/quiz");
-    } else if (contextValue.newUser?.testStatus?.toLowerCase() === "complete") {
+    } else if (contextValue.newUser?.testStatus?.toLowerCase() === "complete" || contextValue.newUser?.step?.toLowerCase() === "final") {
       navigate("/result");
     }
 
@@ -51,28 +50,18 @@ function StartTest() {
         step: "start_test",
       };
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
-    } else if (
-      !contextValue.newUser?.email &&
-      contextValue.newUser?.step === "enter_details"
-    ) {
-      navigate("/register");
-    }
-
-    if (!contextValue.newUser?.step) {
+    } else if (!contextValue.newUser?.email) {
       navigate("/");
-    } else if (contextValue.newUser?.step === "instruction") {
-      navigate("/register");
     }
   }, [contextValue.newUser, location?.pathname]);
 
   useEffect(() => {
     if (!hours && !minutes && !seconds) return;
     if (
-      contextValue.newUser?.step?.toLowerCase() === "start_test" &&
-      !contextValue.newUser?.startTestDelay
+      contextValue.newUser?.step?.toLowerCase() === "start_test" && !contextValue.newUser?.startTestDelay
     ) {
       localStorage.setItem(
-        "timer",
+        "startTesttimer",
         JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
       );
     }
@@ -96,16 +85,16 @@ function StartTest() {
       timer: 0,
       startTestDelay: true,
     };
-    localStorage.removeItem("timer");
+    localStorage.removeItem("startTesttimer");
     contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
   };
 
   const handleEndTest = () => {
     let addDetails = {
-      timer: 0,
+      // timer: 0,
       startTestDelay: true,
     };
-    localStorage.removeItem("timer");
+    // localStorage.removeItem("startTesttimer");
     contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
   };
 
@@ -124,25 +113,53 @@ function StartTest() {
             <div className="card-text mt-3">
               You can start solving problem in
               <span>
-               { !contextValue.newUser?.startTestDelay ? <Countdown
-                  targetTime={dateTimeAfterLimit}
-                  handleEndTest={handleEndTest}
-                  updateHours={(e) => setHours(e)}
-                  updateMinutes={(e) => setMinutes(e)}
-                  updateSeconds={(e) => setSeconds(e)}
-                /> : null }
-                {hours + minutes + seconds == 1 || contextValue.newUser?.startTestDelay ? <span> now</span> : null}
+                {!contextValue.newUser?.startTestDelay ? (
+                  <Countdown
+                    key={"startTest"}
+                    targetTime={dateTimeAfterLimit}
+                    handleEndTest={handleEndTest}
+                    updateHours={(e) => setHours(e)}
+                    updateMinutes={(e) => setMinutes(e)}
+                    updateSeconds={(e) => setSeconds(e)}
+                  />
+                ) : null}
+                {hours + minutes + seconds == 1 ||
+                contextValue.newUser?.startTestDelay ? (
+                  <span> now</span>
+                ) : null}
               </span>
             </div>
             <button
               type="submit"
               className="btn btn-success mt-2"
-              disabled={!(hours + minutes + seconds <= 1) || !contextValue.newUser?.startTestDelay}
+              disabled={
+                !(hours + minutes + seconds <= 1) ||
+                !contextValue.newUser?.startTestDelay
+              }
               onClick={() => handleStartTest()}
             >
               Start Test
             </button>
           </div>
+        </div>
+
+        <div>
+          <h3>General Instructions</h3>
+          <ul>
+            <li>30 Question asked for an aptitude test</li>
+            <li>
+              45 minutes for aptitude test
+            </li>
+            <li>
+              One mark for each correct answer
+            </li>
+            <li>
+              No negative marking
+            </li>
+            <li>
+              In mulitiple choice questions select only needed answers
+            </li>
+          </ul>
         </div>
       </div>
     </>
