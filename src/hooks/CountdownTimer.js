@@ -1,27 +1,24 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { UserContext } from "../context/UserContext";
+import { UserContext } from "../components/context/UserContext";
 
-const NOW_IN_MS = new Date().getTime();
-
-const useCountdown = (targetTime) => {
+const useCountdown = (targetDate) => {
   const contextValue = useContext(UserContext);
-  const TIMER_IN_MS = NOW_IN_MS + contextValue.newUser?.timer;
-  if (contextValue.newUser?.timer > 0) {
-    targetTime = TIMER_IN_MS;
+  if (contextValue.newUser?.timer > 100000) {
+    targetDate = contextValue.newUser?.timer;
   }
   let intervalId = useRef(null);
-  var countDownTime = new Date(targetTime).getTime();
+  var countDownDate = new Date(targetDate).getTime();
 
   const [countDown, setCountDown] = useState(
-    countDownTime - new Date().getTime()
+    countDownDate - new Date().getTime()
   );
 
   useEffect(() => {
     intervalId.current = setInterval(() => {
-      setCountDown(countDownTime - new Date().getTime());
+      setCountDown(countDownDate - new Date().getTime());
     }, 1000);
     return () => clearInterval(intervalId.current);
-  }, [contextValue.newUser?.timer ? targetTime : null]);
+  }, []);
 
   return getReturnValues(countDown, intervalId.current);
 };
