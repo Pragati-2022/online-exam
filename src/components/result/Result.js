@@ -21,14 +21,14 @@ function Result() {
 
     if (!contextValue.newUser?.step) {
       navigate("/");
-    } else if (contextValue.newUser?.step === "instruction") {
-      navigate("/register");
+    } else if (contextValue.newUser?.step === "start_test") {
+      navigate("/start_test");
     }
   }, [contextValue.newUser, location?.pathname]);
 
   return (
     <>
-      <h1>You are completed test successfully!</h1>
+      <h1>Thanks for visiting!!</h1>
     </>
   );
 }
