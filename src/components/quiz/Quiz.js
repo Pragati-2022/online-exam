@@ -6,36 +6,37 @@ import CountDown from "../CountDown";
 import { UserContext } from "../context/UserContext";
 import { useNavigatorOnLine } from "../../hooks/navigatorOnline";
 import axios from "axios";
+import { QuestionContext } from "../context/QuestionsContext";
 
 function Test() {
-    // {
-    //   id: 11,
-    //   title: "one",
-    //   options: [
-    //     {
-    //       title: "A",
-    //       value: false,
-    //     },
-    //     {
-    //       title: "B",
-    //       value: true,
-    //     },
-    //     {
-    //       title: "C",
-    //       value: true,
-    //     },
-    //     {
-    //       title: "D",
-    //       value: false,
-    //     },
-    //   ],
-    //   answer: ["A", "B"],
-    //   selectedOptions: [],
-    //   marks: 5,
-    //   review: false,
-    //   isMultiAns: true,
-    // },
-   
+  // {
+  //   id: 11,
+  //   title: "one",
+  //   options: [
+  //     {
+  //       title: "A",
+  //       value: false,
+  //     },
+  //     {
+  //       title: "B",
+  //       value: true,
+  //     },
+  //     {
+  //       title: "C",
+  //       value: true,
+  //     },
+  //     {
+  //       title: "D",
+  //       value: false,
+  //     },
+  //   ],
+  //   answer: ["A", "B"],
+  //   selectedOptions: [],
+  //   marks: 5,
+  //   review: false,
+  //   isMultiAns: true,
+  // },
+
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -54,22 +55,41 @@ function Test() {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const contextValue = useContext(UserContext);
-
+  const questionContextValue = useContext(QuestionContext);
+  const [isLoad, setIsLoad] = useState(false);
   const [question, setQuestion] = useState({});
-    
+
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API}/users/question/get`).then((res) => {
-      setTestQuestions((testQue) => [...res.data]);
-      const que = res.data[parseInt(params.id) - 1];
-      if (JSON.stringify(params) === "{}") {
-        setQuestion({ ...res.data[0], index: 0 });
-      } else {
-        setQuestion({
-          ...res.data[que ? parseInt(params.id) - 1 : 0],
-          index: que ? parseInt(params.id) - 1 : 0,
+    setIsLoad(true);
+    axios
+      .get(`${process.env.REACT_APP_API}/users/question/get`)
+      .then((res) => {
+        let answers = res.data.map((data) => {
+          return { questionId: data._id, ans: [] };
         });
-      }
-    });
+
+        questionContextValue.questionDispatch({
+          type: "CREATE_QUESTION",
+          payload: answers,
+        });
+
+        setTestQuestions((testQue) => [...res.data]);
+        const que = res.data[parseInt(params.id) - 1];
+        if (JSON.stringify(params) === "{}") {
+          setQuestion({ ...res.data[0], index: 0 });
+        } else {
+          setQuestion({
+            ...res.data[que ? parseInt(params.id) - 1 : 0],
+            index: que ? parseInt(params.id) - 1 : 0,
+          });
+        }
+
+        setIsLoad(false);
+      })
+      .catch((error) => {
+        alert(error);
+        setIsLoad(false);
+      });
 
     return () => {
       const newTime = JSON.parse(localStorage.getItem("timer"));
@@ -128,14 +148,14 @@ function Test() {
       }
     }
   }, [contextValue.newUser, location?.pathname]);
-  
+
   useEffect(() => {
     if (!hours && !minutes && !seconds) return;
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
-    localStorage.setItem(
-      "timer",
-      JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
-    );
+      localStorage.setItem(
+        "timer",
+        JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
+      );
     }
   }, [hours, minutes, seconds]);
 
@@ -170,6 +190,15 @@ function Test() {
 
   const updateQuestion = (que) => {
     setQuestion(que);
+    let answers = [];
+    que.options.map((data) =>
+      data?.value && data?.title
+        ? answers?.push(data?.title)
+        : data?.query
+        ? answers?.push(data?.query)
+        : null
+    );
+
     let newTestQuestions = testQuestions.map((obj) => {
       if (obj?._id === question?._id) {
         return { ...obj, options: question?.options };
@@ -177,6 +206,10 @@ function Test() {
       return obj;
     });
 
+    questionContextValue.questionDispatch({
+      type: "UPDATE_QUESTION",
+      payload: { questionId: que._id, ans: [...answers] },
+    });
     setTestQuestions(newTestQuestions);
     // testQuestions.some((data) => {
     //   return data.options.some((data) => {
@@ -188,6 +221,13 @@ function Test() {
   const handleSubmitTest = () => {
     if (hours > 0 || minutes > 0 || seconds > 1) {
       if (window.confirm("Are you sure you want to end the test!")) {
+        questionContextValue.questionDispatch({
+          type: "END_TEST",
+          payload: {
+            candidateId: contextValue.newUser?.candidateId,
+            questionAnswer: questionContextValue.question,
+          },
+        });
         navigate(`/result`);
 
         let addDetails = {
@@ -199,7 +239,7 @@ function Test() {
         contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
       }
     } else {
-      navigate('/result');
+      navigate("/result");
 
       let addDetails = {
         testStatus: "complete",
@@ -216,6 +256,7 @@ function Test() {
 
   return (
     <>
+      {isLoad ? <h1>Load</h1> : null}
       <div className="countdown">
         <CountDown
           targetTime={dateTimeAfterLimit}
