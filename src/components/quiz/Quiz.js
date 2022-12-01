@@ -1,14 +1,15 @@
 import Questions from "../questions/Questions";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CountDown from "../CountDown";
 import { UserContext } from "../context/UserContext";
+import { useNavigatorOnLine } from "../../hooks/navigatorOnline";
+import axios from "axios";
 
 function Test() {
-  const allTestQuestions = [
     // {
-    //   id: 1,
+    //   id: 11,
     //   title: "one",
     //   options: [
     //     {
@@ -34,194 +35,13 @@ function Test() {
     //   review: false,
     //   isMultiAns: true,
     // },
-    {
-      id: 1,
-      title: "one",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: true,
-        },
-        {
-          title: "C",
-          value: false,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["A"],
-      selectedOptions: [],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 2,
-      title: "two",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: true,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["C"],
-      selectedOptions: [],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 3,
-      title: "three",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: true,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["A"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 4,
-      title: "four",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: false,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["B"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 5,
-      title: "five",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: false,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["B"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 6,
-      title: "six",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: true,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["C"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-    {
-      id: 7,
-      title: "seven",
-      options: [
-        {
-          title: "A",
-          value: false,
-        },
-        {
-          title: "B",
-          value: false,
-        },
-        {
-          title: "C",
-          value: false,
-        },
-        {
-          title: "D",
-          value: false,
-        },
-      ],
-      answer: ["A"],
-      selectedOptions: ["A"],
-      marks: 5,
-      review: false,
-    },
-  ];
-
+   
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
-  const [testQuestions, setTestQuestions] = useState(allTestQuestions);
+  const isOnline = useNavigatorOnLine();
+  const [testQuestions, setTestQuestions] = useState([]);
+
   const LIMIT_IN_MS = 60 * 60 * 1000;
   const MS = {
     HOURS: 3600000,
@@ -235,34 +55,43 @@ function Test() {
   const [seconds, setSeconds] = useState(0);
   const contextValue = useContext(UserContext);
 
-  const getQuestionWithIndex = () => {
-    const que = testQuestions[parseInt(params.id) - 1];
-    return que ? parseInt(params.id) - 1 : 0;
-  };
-
-  const [question, setQuestion] = useState(
-    JSON.stringify(params) === "{}"
-      ? { ...testQuestions[0], index: 0 }
-      : {
-          ...testQuestions[getQuestionWithIndex()],
-          index: getQuestionWithIndex(),
-        }
-  );
-
+  const [question, setQuestion] = useState({});
+    
   useEffect(() => {
+    axios.get(`${process.env.REACT_APP_API}/users/question/get`).then((res) => {
+      setTestQuestions((testQue) => [...res.data]);
+      const que = res.data[parseInt(params.id) - 1];
+      if (JSON.stringify(params) === "{}") {
+        setQuestion({ ...res.data[0], index: 0 });
+      } else {
+        setQuestion({
+          ...res.data[que ? parseInt(params.id) - 1 : 0],
+          index: que ? parseInt(params.id) - 1 : 0,
+        });
+      }
+    });
+
     return () => {
-      const newTime = JSON.parse(localStorage.getItem("timer")) || {};
+      const newTime = JSON.parse(localStorage.getItem("timer"));
       const newTimeInMs =
         newTime?.hours * MS.HOURS +
         newTime?.minutes * MS.MINUTES +
         newTime?.seconds * MS.SECOND;
 
       let addDetails = {
-        timer: newTimeInMs
+        timer: newTimeInMs + NOW_IN_MS,
       };
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     };
   }, []);
+
+  // useEffect(() => {
+  //   console.log("isOnline", isOnline);
+
+  //   if(!isOnline){
+  //     console.log('ssonline');
+  //   }
+  // }, [isOnline]);
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
@@ -280,18 +109,12 @@ function Test() {
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     }
 
-    if (
-      !contextValue.newUser?.step ||
-      contextValue.newUser?.step === "instruction"
-    ) {
+    if (!contextValue.newUser?.step) {
       navigate("/");
-    } else if (contextValue.newUser?.step === "enter_details") {
-      navigate("/register");
     } else if (contextValue.newUser?.step === "start_test") {
       navigate("/start_test");
     } else if (
       contextValue.newUser?.email &&
-      contextValue.newUser?.result &&
       contextValue.newUser?.testStatus?.toLowerCase() === "complete"
     ) {
       navigate(`/result`);
@@ -305,19 +128,19 @@ function Test() {
       }
     }
   }, [contextValue.newUser, location?.pathname]);
-
+  
   useEffect(() => {
     if (!hours && !minutes && !seconds) return;
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
-      localStorage.setItem(
-        "timer",
-        JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
-      );
+    localStorage.setItem(
+      "timer",
+      JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
+    );
     }
   }, [hours, minutes, seconds]);
 
   const handleQuestion = (id, index) => {
-    let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
+    let selectedQueIndex = testQuestions.findIndex((data) => data._id === id);
     setQuestion({
       ...testQuestions[selectedQueIndex],
       index: selectedQueIndex,
@@ -327,7 +150,7 @@ function Test() {
 
   const handlePreQuestion = (id) => {
     console.log(id);
-    let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
+    let selectedQueIndex = testQuestions.findIndex((data) => data._id === id);
     console.log(testQuestions[selectedQueIndex]);
     setQuestion({
       ...testQuestions[selectedQueIndex - 1],
@@ -337,7 +160,7 @@ function Test() {
   };
 
   const handleNextQuestion = (id) => {
-    let selectedQueIndex = testQuestions.findIndex((data) => data.id === id);
+    let selectedQueIndex = testQuestions.findIndex((data) => data._id === id);
     setQuestion({
       ...testQuestions[selectedQueIndex + 1],
       index: selectedQueIndex + 1,
@@ -348,7 +171,7 @@ function Test() {
   const updateQuestion = (que) => {
     setQuestion(que);
     let newTestQuestions = testQuestions.map((obj) => {
-      if (obj?.id === question?.id) {
+      if (obj?._id === question?._id) {
         return { ...obj, options: question?.options };
       }
       return obj;
@@ -365,19 +188,9 @@ function Test() {
   const handleSubmitTest = () => {
     if (hours > 0 || minutes > 0 || seconds > 1) {
       if (window.confirm("Are you sure you want to end the test!")) {
-        let marks = 0;
-        testQuestions.forEach((data, index) => {
-          data?.options.some((ans, index) => {
-            if (ans?.value === true && ans?.title === data?.answer[0]) {
-              marks = marks + data?.marks;
-            }
-            return ans?.value;
-          });
-        });
         navigate(`/result`);
 
         let addDetails = {
-          result: marks,
           pauseTime: `${hours}:${minutes}:${seconds}`,
           testStatus: "complete",
           timer: 0,
@@ -386,19 +199,9 @@ function Test() {
         contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
       }
     } else {
-      let marks = 0;
-      testQuestions.forEach((data, index) => {
-        data?.options.some((ans, index) => {
-          if (ans?.value === true && ans?.title === data?.answer[0]) {
-            marks = marks + data?.marks;
-          }
-          return ans?.value;
-        });
-      });
-      navigate(`/result?mark=${marks}`);
+      navigate('/result');
 
       let addDetails = {
-        result: marks,
         testStatus: "complete",
         timer: 0,
       };
@@ -435,7 +238,7 @@ function Test() {
           >
             <div
               className="qno-no"
-              onClick={() => handleQuestion(que.id, index)}
+              onClick={() => handleQuestion(que._id, index)}
             >
               {index + 1}
             </div>
@@ -456,8 +259,8 @@ function Test() {
           <div className="prev-next-group">
             <button
               type="button"
-              disabled={parseInt(question?.id) === testQuestions[0]?.id}
-              onClick={() => handlePreQuestion(parseInt(question?.id))}
+              disabled={question?._id === testQuestions[0]?._id}
+              onClick={() => handlePreQuestion(question?._id)}
               className="btn btn-primary"
             >
               pre
@@ -465,10 +268,9 @@ function Test() {
             <button
               type="submit"
               disabled={
-                parseInt(question?.id) ===
-                testQuestions[testQuestions?.length - 1]?.id
+                question?._id === testQuestions[testQuestions?.length - 1]?._id
               }
-              onClick={() => handleNextQuestion(parseInt(question?.id))}
+              onClick={() => handleNextQuestion(question?._id)}
               className="btn btn-primary"
             >
               next
