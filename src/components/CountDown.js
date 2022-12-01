@@ -1,5 +1,5 @@
 import React from "react";
-import { useCountdown } from "./custom-hook/CountdownTimer";
+import { useCountdown } from "../hooks/CountdownTimer";
 
 const Countdown = ({
   targetTime,
