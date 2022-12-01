@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useEffect } from "react";
+import React, { useEffect, useReducer } from "react";
 import { BrowserRouter } from "react-router-dom";
 import AppRouter from "./AppRouter";
 import { UserContext } from "./components/context/UserContext";
@@ -29,11 +29,8 @@ function reducer(state, action) {
 }
 
 function App() {
-  const [newUser, dispatch] = React.useReducer(
-    reducer,
-    JSON.parse(localStorage.getItem("userDetails"))
-      ? JSON.parse(localStorage.getItem("userDetails"))
-      : initialState
+  const [newUser, dispatch] = useReducer(
+    reducer, initialState
   );
 
   useEffect(() => {
