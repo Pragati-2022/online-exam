@@ -28,27 +28,28 @@ function Registration() {
   const contextValue = useContext(UserContext);
 
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API}/users/college/get`).then((res) => {
-      setCollegeNames(res?.data);
-    });
-  }, []);
-
-  useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
       navigate("/quiz");
-    } else if (contextValue.newUser?.testStatus?.toLowerCase() === "complete" ||  contextValue.newUser?.step?.toLowerCase() === "final" ) {
+    } else if (
+      contextValue.newUser?.testStatus?.toLowerCase() === "complete" ||
+      contextValue.newUser?.step?.toLowerCase() === "final"
+    ) {
       navigate("/result");
-    } 
-
-    if (!contextValue.newUser?.step) {
+    } else if (!contextValue.newUser?.step) {
       let addDetails = {
         step: "enter_details",
       };
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+
+      axios
+        .get(`${process.env.REACT_APP_API}/users/college/get`)
+        .then((res) => {
+          setCollegeNames(res?.data);
+        });
     } else if (contextValue.newUser?.step === "start_test") {
       navigate("/start_test");
     }
-  }, [contextValue.newUser]);
+  }, []);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -98,6 +99,7 @@ function Registration() {
           ) {
             const addDetails = {
               email: emailRef.current.value,
+              candidateId: res.data?.candidateid,
             };
             contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
             navigate(`/start_test`);
@@ -330,10 +332,19 @@ function Registration() {
               </div>
             </div>
             <div className="form-group">
-              <button type="submit" className="cmn-btn submit-btn" disabled={isLoad}>
-              {
-                !isLoad ?  <span>Submit</span> :  <span><img src={Spinner} alt="Spinner" />Loading...</span>
-              } 
+              <button
+                type="submit"
+                className="cmn-btn submit-btn"
+                disabled={isLoad}
+              >
+                {!isLoad ? (
+                  <span>Submit</span>
+                ) : (
+                  <span>
+                    <img src={Spinner} alt="Spinner" />
+                    Loading...
+                  </span>
+                )}
               </button>
             </div>
           </div>
