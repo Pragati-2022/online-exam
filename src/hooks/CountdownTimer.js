@@ -1,8 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../components/context/UserContext";
+import { useNavigatorOnLine } from "./navigatorOnline";
 
 const useCountdown = (targetDate) => {
   const contextValue = useContext(UserContext);
+  const isOnline = useNavigatorOnLine();
+
   if (contextValue.newUser?.timer > 100000) {
     targetDate = contextValue.newUser?.timer;
   }
@@ -14,11 +17,21 @@ const useCountdown = (targetDate) => {
   );
 
   useEffect(() => {
-    intervalId.current = setInterval(() => {
-      setCountDown(countDownDate - new Date().getTime());
-    }, 1000);
+    if (!contextValue.newUser?.pauseInterval) {
+      intervalId.current = setInterval(() => {
+        setCountDown(countDownDate - new Date().getTime());
+      }, 1000);
+    } else {
+      clearInterval(intervalId.current);
+    }
     return () => clearInterval(intervalId.current);
   }, []);
+
+  useEffect(() => {
+    if (!isOnline) {
+      clearInterval(intervalId.current);
+    }
+  }, [isOnline]);
 
   return getReturnValues(countDown, intervalId.current);
 };
