@@ -8,6 +8,8 @@ import Quiz from "./components/quiz/Quiz";
 import Header from "./components/common/header/Header";
 import Result from "./components/result/Result";
 import { UserContext } from "./components/context/UserContext";
+import NoInternetConnection from "./components/no-internet-connection/NoInternetConnection";
+import { useNavigatorOnLine } from "./hooks/navigatorOnline";
 
 function NotFound() {
   const navigate = useNavigate();
@@ -29,6 +31,22 @@ function NotFound() {
 }
 
 function AppRouter(props) {
+  const isOnline = useNavigatorOnLine();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isOnline) {
+      console.log(isOnline);
+      navigate("/no_internet");
+    }
+  }, [isOnline]);
+
+  useEffect(() => {
+    if (location.pathname !== "/no_internet") {
+      localStorage.setItem("currentPath", location.pathname);
+    }
+  }, []);
 
   return (
     <>
@@ -39,6 +57,7 @@ function AppRouter(props) {
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/quiz/:id" element={<Quiz />} />
         <Route path="/result" element={<Result />} />
+        <Route path="/no_internet" element={<NoInternetConnection />} />
         <Route path="*" element={<NotFound status={404} />} />
       </Routes>
     </>
