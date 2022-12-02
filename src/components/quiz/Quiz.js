@@ -87,31 +87,28 @@ function Test() {
         setIsLoad(false);
       })
       .catch((error) => {
-        alert(error);
+        console.error(error);
         setIsLoad(false);
       });
 
     return () => {
-      const newTime = JSON.parse(localStorage.getItem("timer"));
-      const newTimeInMs =
-        newTime?.hours * MS.HOURS +
-        newTime?.minutes * MS.MINUTES +
-        newTime?.seconds * MS.SECOND;
-
-      let addDetails = {
-        timer: newTimeInMs + NOW_IN_MS,
-      };
-      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+      timerPause(false);
     };
   }, []);
 
-  // useEffect(() => {
-  //   console.log("isOnline", isOnline);
-
-  //   if(!isOnline){
-  //     console.log('ssonline');
-  //   }
-  // }, [isOnline]);
+  useEffect(() => {
+    if (!isOnline) {
+      timerPause(true);
+    } else {
+      if (contextValue.newUser?.pauseInterval) {
+        let addDetails = {
+          timer: contextValue.newUser,
+          pauseInterval: false,
+        };
+        contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+      }
+    }
+  }, [isOnline]);
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
@@ -158,6 +155,19 @@ function Test() {
       );
     }
   }, [hours, minutes, seconds]);
+
+  const timerPause = (isPause) => {
+    const newTime = JSON.parse(localStorage.getItem("timer"));
+    const newTimeInMs =
+      newTime?.hours * MS.HOURS +
+      newTime?.minutes * MS.MINUTES +
+      newTime?.seconds * MS.SECOND;
+    let addDetails = {
+      timer: newTimeInMs + NOW_IN_MS,
+      pauseInterval: isPause,
+    };
+    contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+  };
 
   const handleQuestion = (id, index) => {
     let selectedQueIndex = testQuestions.findIndex((data) => data._id === id);
