@@ -116,7 +116,7 @@ function Registration() {
         .catch((error) => {
           setSuccess("");
           setError(error.response.data.message);
-          alert(error.response.data.message);
+          console.error(error.response.data.message);
           setIsLoad(false);
           return false;
         });
@@ -187,8 +187,14 @@ function Registration() {
                     type="date"
                     className="form-control"
                     max={`${new Date().getFullYear() - 18}-${
-                      new Date().getMonth() + 1
-                    }-${new Date().getDate()}`}
+                      (new Date().getMonth() + 1).toString().length > 1
+                        ? new Date().getMonth() + 1
+                        : "0" + new Date().getMonth() + 1
+                    }-${
+                      new Date().getDate().toString.length > 1
+                        ? new Date().getDate()
+                        : "0" + new Date().getDate()
+                    }`}
                     ref={dateOfBirthRef}
                     required
                   />
@@ -348,8 +354,6 @@ function Registration() {
               </button>
             </div>
           </div>
-          {success ? <div className="text-success">{success}</div> : null}
-          {error ? <div className="text-danger">{error}</div> : null}
         </form>
       </div>
     </>
