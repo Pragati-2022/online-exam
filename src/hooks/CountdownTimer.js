@@ -17,21 +17,11 @@ const useCountdown = (targetDate) => {
   );
 
   useEffect(() => {
-    if (!contextValue.newUser?.pauseInterval) {
       intervalId.current = setInterval(() => {
         setCountDown(countDownDate - new Date().getTime());
       }, 1000);
-    } else {
-      clearInterval(intervalId.current);
-    }
     return () => clearInterval(intervalId.current);
-  }, []);
-
-  useEffect(() => {
-    if (!isOnline) {
-      clearInterval(intervalId.current);
-    }
-  }, [isOnline]);
+  }, [countDownDate]);
 
   return getReturnValues(countDown, intervalId.current);
 };
