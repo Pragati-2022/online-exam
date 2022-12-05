@@ -38,7 +38,10 @@ function StartTest() {
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
       navigate("/quiz");
-    } else if (contextValue.newUser?.testStatus?.toLowerCase() === "complete" || contextValue.newUser?.step?.toLowerCase() === "final") {
+    } else if (
+      contextValue.newUser?.testStatus?.toLowerCase() === "complete" ||
+      contextValue.newUser?.step?.toLowerCase() === "final"
+    ) {
       navigate("/result");
     }
 
@@ -58,7 +61,8 @@ function StartTest() {
   useEffect(() => {
     if (!hours && !minutes && !seconds) return;
     if (
-      contextValue.newUser?.step?.toLowerCase() === "start_test" && !contextValue.newUser?.startTestDelay
+      contextValue.newUser?.step?.toLowerCase() === "start_test" &&
+      !contextValue.newUser?.startTestDelay
     ) {
       localStorage.setItem(
         "startTesttimer",
@@ -112,7 +116,7 @@ function StartTest() {
           <div className="card-body">
             <div className="card-text mt-3">
               You can start solving problem in
-              <span>
+              {/* <span>
                 {!contextValue.newUser?.startTestDelay ? (
                   <Countdown
                     key={"startTest"}
@@ -127,15 +131,15 @@ function StartTest() {
                 contextValue.newUser?.startTestDelay ? (
                   <span> now</span>
                 ) : null}
-              </span>
+              </span> */}
             </div>
+            {/* disabled={
+                !(hours + minutes + seconds <= 1) ||
+                !contextValue.newUser?.startTestDelay
+              } */}
             <button
               type="submit"
               className="btn btn-success mt-2"
-              disabled={
-                !(hours + minutes + seconds <= 1) ||
-                !contextValue.newUser?.startTestDelay
-              }
               onClick={() => handleStartTest()}
             >
               Start Test
@@ -147,18 +151,10 @@ function StartTest() {
           <h3>General Instructions</h3>
           <ul>
             <li>30 Question asked for an aptitude test</li>
-            <li>
-              45 minutes for aptitude test
-            </li>
-            <li>
-              One mark for each correct answer
-            </li>
-            <li>
-              No negative marking
-            </li>
-            <li>
-              In mulitiple choice questions select only needed answers
-            </li>
+            <li>45 minutes for aptitude test</li>
+            <li>One mark for each correct answer</li>
+            <li>No negative marking</li>
+            <li>In mulitiple choice questions select only needed answers</li>
           </ul>
         </div>
       </div>
