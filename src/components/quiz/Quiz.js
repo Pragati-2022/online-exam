@@ -40,7 +40,6 @@ function Test() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
-  const isOnline = useNavigatorOnLine();
   const [testQuestions, setTestQuestions] = useState([]);
 
   const LIMIT_IN_MS = 60 * 60 * 1000;
@@ -92,23 +91,9 @@ function Test() {
       });
 
     return () => {
-      timerPause(false);
+      timerPause();
     };
   }, []);
-
-  useEffect(() => {
-    if (!isOnline) {
-      timerPause(true);
-    } else {
-      if (contextValue.newUser?.pauseInterval) {
-        let addDetails = {
-          timer: contextValue.newUser,
-          pauseInterval: false,
-        };
-        contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
-      }
-    }
-  }, [isOnline]);
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
@@ -156,7 +141,7 @@ function Test() {
     }
   }, [hours, minutes, seconds]);
 
-  const timerPause = (isPause) => {
+  const timerPause = () => {
     const newTime = JSON.parse(localStorage.getItem("timer"));
     const newTimeInMs =
       newTime?.hours * MS.HOURS +
@@ -164,7 +149,6 @@ function Test() {
       newTime?.seconds * MS.SECOND;
     let addDetails = {
       timer: newTimeInMs + NOW_IN_MS,
-      pauseInterval: isPause,
     };
     contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
   };
