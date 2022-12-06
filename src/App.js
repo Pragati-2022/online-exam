@@ -52,14 +52,40 @@ function questionReducer(state, action) {
       }
       return [...state];
     case "END_TEST":
-      console.log(action.payload);
+      if (action.payload.questionAnswer.length) {
+        axios
+          .get(`${process.env.REACT_APP_API}/management/result/get`)
+          .then((res) => {
+            let candidate = res.data?.find(
+              (data) => data.candidateId === action.payload.candidateId
+            );
+            if (candidate) {
+              axios
+                .put(
+                  `${process.env.REACT_APP_API}/users/result/update`,
+                  action.payload
+                )
+                .then((res) => {
+                });
+            } else {
+              axios
+                .post(
+                  `${process.env.REACT_APP_API}/users/test/submit`,
+                  action.payload
+                )
+                .then((res) => {
+                });
+            }
+          });
+      }
+      return [...state];
+    case "GET_QUESTION":
       axios
-        .post(
-          `${process.env.REACT_APP_API}/users/test/submit`,
-          action.payload
+        .get(
+          `${process.env.REACT_APP_API}/management/result/get/${action.payload}`
         )
         .then((res) => {
-          console.log(res);
+          state = res?.data[0]?.questionAnswer;
         });
       return [...state];
     default:

@@ -58,6 +58,25 @@ function Test() {
   const [isLoad, setIsLoad] = useState(false);
   const [question, setQuestion] = useState({});
 
+  const timerPause = () => {
+    const newTime = JSON.parse(localStorage.getItem("timer"));
+    const newTimeInMs =
+      newTime?.hours * MS.HOURS +
+      newTime?.minutes * MS.MINUTES +
+      newTime?.seconds * MS.SECOND;
+    let addDetails = {
+      timer: newTimeInMs + NOW_IN_MS,
+    };
+    contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+    questionContextValue.questionDispatch({
+      type: "END_TEST",
+      payload: {
+        candidateId: contextValue.newUser?.candidateId,
+        questionAnswer: questionContextValue?.question,
+      },
+    });
+  };
+
   useEffect(() => {
     setIsLoad(true);
     axios
@@ -67,7 +86,33 @@ function Test() {
           return { questionId: data._id, ans: [] };
         });
 
-        questionContextValue.questionDispatch({
+        if (contextValue.newUser?.candidateId) {
+          questionContextValue.questionDispatch({
+            type: "GET_QUESTION",
+            payload: contextValue.newUser?.candidateId,
+          });
+        }
+
+        if (questionContextValue?.question?.length) {
+          let dataaa = res.data.map((data) => {
+            return questionContextValue?.question.forEach((element) => {
+              if (element.questionId === data?._id && data?.optionType !== "Query") {
+                data.options.map((option) => {
+                  element.ans.forEach((ele) => {
+                    if (option.title === ele) {
+                      option.value = true;
+                    }
+                  });
+                });
+              } else if(element.questionId === data?._id && data?.optionType === "Query"){
+                data.options[0].query = element.ans[0];
+                data.options[0].value = true;
+              }
+            });
+          });
+        }
+
+        questionContextValue.questionContextValue?.questionDispatch({
           type: "CREATE_QUESTION",
           payload: answers,
         });
@@ -93,7 +138,7 @@ function Test() {
     return () => {
       timerPause();
     };
-  }, []);
+  }, [contextValue.newUser?.candidateId]);
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
@@ -141,18 +186,6 @@ function Test() {
     }
   }, [hours, minutes, seconds]);
 
-  const timerPause = () => {
-    const newTime = JSON.parse(localStorage.getItem("timer"));
-    const newTimeInMs =
-      newTime?.hours * MS.HOURS +
-      newTime?.minutes * MS.MINUTES +
-      newTime?.seconds * MS.SECOND;
-    let addDetails = {
-      timer: newTimeInMs + NOW_IN_MS,
-    };
-    contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
-  };
-
   const handleQuestion = (id, index) => {
     let selectedQueIndex = testQuestions.findIndex((data) => data._id === id);
     setQuestion({
@@ -163,9 +196,7 @@ function Test() {
   };
 
   const handlePreQuestion = (id) => {
-    console.log(id);
     let selectedQueIndex = testQuestions.findIndex((data) => data._id === id);
-    console.log(testQuestions[selectedQueIndex]);
     setQuestion({
       ...testQuestions[selectedQueIndex - 1],
       index: selectedQueIndex - 1,
