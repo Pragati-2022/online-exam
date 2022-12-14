@@ -103,6 +103,13 @@ body {
 	@apply bg-black text-white hover:bg-[#E4322A];
 }
 
+
+/* Header
+--------------------*/
+.main-header .countdown {
+	@apply ml-auto bg-blue-600 px-5 py-3 rounded-md text-white text-lg font-[600];
+}
+
 /* Card
 --------------------*/
 .card {
@@ -148,6 +155,8 @@ body {
 	@apply opacity-60 translate-x-[0.05rem] -translate-y-[0.5rem] scale-[0.85];
 }
 
+
+
 .list-type li {
 	@apply relative pl-[46px] pr-6 py-3 after:absolute bg-gray-100 mb-3 rounded-md;
 }
@@ -170,6 +179,7 @@ body {
 	@apply text-center text-[20px] md:text-[36px] text-black font-[600] leading-[1.3];
 }
 
+
 .que-option textarea {
 	@apply p-4 w-full border border-slate-200 bg-white shadow-sm rounded-md outline-none;
 }
@@ -178,6 +188,9 @@ body {
 	@apply bg-white p-3 pl-[45px] border border-transparent flex items-center relative shadow-sm rounded hover:shadow-md ease-in duration-300;
 }
 
+.sm\:col-span-12 .que-option {
+	@apply pl-3;
+}
 .que-option label {
 	@apply after:absolute after:top-0 after:bottom-0 after:left-0 after:right-0 after:cursor-pointer;
 }
@@ -214,7 +227,15 @@ body {
 }
 
 .question-wrap .que-menu {
-	@apply min-w-[40px] min-h-[40px] inline-flex items-center justify-center border border-gray-400 rounded-full font-[600] text-lg mx-3 lg:mb-4 lg:mx-0 relative bg-white z-[1] cursor-pointer;
+	@apply min-w-[40px] min-h-[40px] inline-flex items-center justify-center border border-gray-400 rounded-full font-[600] text-lg mx-3 lg:mb-4 lg:mx-0 relative bg-white z-[1] cursor-pointer relative;
+}
+
+.question-wrap .que-menu.done {
+	@apply bg-green-500 text-white border-green-500;
+}
+
+.question-wrap .que-menu.active {
+	@apply bg-green-100 border-green-400 text-green-500;
 }
 
 .question-quit {

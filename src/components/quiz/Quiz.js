@@ -9,34 +9,6 @@ import { QuestionContext } from "../context/QuestionsContext";
 import QuizHeader from "../common/quiz-header/QuizHeader";
 
 function Test() {
-  // {
-  //   id: 11,
-  //   title: "one",
-  //   options: [
-  //     {
-  //       title: "A",
-  //       value: false,
-  //     },
-  //     {
-  //       title: "B",
-  //       value: true,
-  //     },
-  //     {
-  //       title: "C",
-  //       value: true,
-  //     },
-  //     {
-  //       title: "D",
-  //       value: false,
-  //     },
-  //   ],
-  //   answer: ["A", "B"],
-  //   selectedOptions: [],
-  //   marks: 5,
-  //   review: false,
-  //   isMultiAns: true,
-  // },
-
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -298,7 +270,7 @@ function Test() {
           />
         </div>
       </QuizHeader>
-
+    <main className="main-wrap">
       <div className="container">
         <div className="question-box">
           <Questions question={question} updateQuestion={updateQuestion} />
@@ -402,6 +374,7 @@ function Test() {
           </div>
         ))}
       </div>
+    </main>
     </>
   );
 }

@@ -47,7 +47,7 @@ function StartTest() {
 
   return (
     <>
-      <main class="main-wrap pb-7">
+      <main className="main-wrap pb-7">
         <div className="container">
           <div className="card">
             <div className="card-header">

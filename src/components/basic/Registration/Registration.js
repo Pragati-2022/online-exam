@@ -1,14 +1,13 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { UserContext } from "./../../context/UserContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../../../images/ring-36.svg";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Registration() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
   const [isLoad, setIsLoad] = useState(false);
   const [collegeNames, setCollegeNames] = useState([]);
 
@@ -25,6 +24,10 @@ function Registration() {
   const futureGoalRef = useRef(null);
   const currentAddressRef = useRef(null);
   const contextValue = useContext(UserContext);
+
+  useEffect(() => {
+    contextValue.dispatch({ type: "GET_USER" });
+  });
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
@@ -48,7 +51,7 @@ function Registration() {
     } else if (contextValue.newUser?.step === "start_test") {
       navigate("/start_test");
     }
-  }, []);
+  }, [contextValue, navigate]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -66,8 +69,7 @@ function Registration() {
       !futureGoalRef.current.value ||
       !currentAddressRef.current.value
     ) {
-      setSuccess("");
-      setError("Details are required!");
+      toast.warning("Details are required!");
     } else {
       const userDetail = {
         firstName: firstNameRef.current.value,
@@ -89,8 +91,8 @@ function Registration() {
         .post(`${process.env.REACT_APP_API}/users/candidate/create`, userDetail)
         .then((res) => {
           console.log("create user", res);
-          setSuccess("Register successful");
-          setError("");
+          toast.success("Register successful!");
+          localStorage.setItem("userEmail", emailRef.current.value);
           if (
             experienceRef.current.value === "0" ||
             experienceRef.current.value === "1-2"
@@ -112,8 +114,7 @@ function Registration() {
           setIsLoad(false);
         })
         .catch((error) => {
-          setSuccess("");
-          setError(error.response.data.message);
+          toast.error(error.response.data.message);
           console.error(error.response.data.message);
           setIsLoad(false);
           return false;
@@ -151,7 +152,7 @@ function Registration() {
                         ref={firstNameRef}
                         required
                       />
-                      <label htmlFor="firstName">Full Name</label>
+                      <label htmlFor="firstName">First Name</label>
                     </div>
                   </div>
                   <div className="col-span-12 md:col-span-6 lg:col-span-4">
@@ -337,27 +338,36 @@ function Registration() {
                       disabled={isLoad}
                     >
                       {!isLoad ? (
-                        <span className="btn-text">Submit</span>
+                        <>
+                          <span className="btn-text">Submit</span>
+                          <span className="btn-icon">
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M6 12L5.2125 11.1937L9.84375 6.5625H0V5.4375H9.84375L5.2125 0.80625L6 0L12 6L6 12Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </span>
+                        </>
                       ) : (
-                        <span className="btn-icon">
-                          <img src={Spinner} alt="Spinner" />
-                          Loading...
-                        </span>
+                        <>
+                          <span className="btn-icon">
+                            <img
+                              width="12"
+                              height="12"
+                              src={Spinner}
+                              alt="Spinner"
+                            />
+                          </span>
+                          <span className="btn-text">Loading...</span>
+                        </>
                       )}
-                      <span className="btn-icon">
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M6 12L5.2125 11.1937L9.84375 6.5625H0V5.4375H9.84375L5.2125 0.80625L6 0L12 6L6 12Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
                     </button>
                   </div>
                 </div>

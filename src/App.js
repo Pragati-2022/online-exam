@@ -5,6 +5,7 @@ import AppRouter from "./AppRouter";
 import { UserContext } from "./components/context/UserContext";
 import { QuestionContext } from "./components/context/QuestionsContext";
 import axios from "axios";
+import { ToastContainer } from "react-toastify";
 
 const initialState = {
   step: "",
@@ -65,16 +66,14 @@ function questionReducer(state, action) {
                   `${process.env.REACT_APP_API}/users/result/update`,
                   action.payload
                 )
-                .then((res) => {
-                });
+                .then((res) => {});
             } else {
               axios
                 .post(
                   `${process.env.REACT_APP_API}/users/test/submit`,
                   action.payload
                 )
-                .then((res) => {
-                });
+                .then((res) => {});
             }
           });
       }
@@ -94,7 +93,7 @@ function questionReducer(state, action) {
 }
 
 function App() {
-  const [newUser, dispatch] = useReducer(reducer, initialState);
+  const [newUser, dispatch] = useReducer(reducer);
   const [question, questionDispatch] = useReducer(questionReducer, []);
 
   useEffect(() => {
@@ -103,6 +102,19 @@ function App() {
 
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+
       <UserContext.Provider
         value={{
           newUser: newUser,
