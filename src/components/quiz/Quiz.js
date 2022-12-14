@@ -1,12 +1,12 @@
 import Questions from "../questions/Questions";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import CountDown from "../CountDown";
 import { UserContext } from "../context/UserContext";
 import { useNavigatorOnLine } from "../../hooks/navigatorOnline";
 import axios from "axios";
 import { QuestionContext } from "../context/QuestionsContext";
+import QuizHeader from "../common/quiz-header/QuizHeader";
 
 function Test() {
   // {
@@ -94,9 +94,12 @@ function Test() {
         }
 
         if (questionContextValue?.question?.length) {
-          let dataaa = res.data.map((data) => {
+          res.data.map((data) => {
             return questionContextValue?.question.forEach((element) => {
-              if (element.questionId === data?._id && data?.optionType !== "Query") {
+              if (
+                element.questionId === data?._id &&
+                data?.optionType !== "Query"
+              ) {
                 data.options.map((option) => {
                   element.ans.forEach((ele) => {
                     if (option.title === ele) {
@@ -104,7 +107,10 @@ function Test() {
                     }
                   });
                 });
-              } else if(element.questionId === data?._id && data?.optionType === "Query"){
+              } else if (
+                element.questionId === data?._id &&
+                data?.optionType === "Query"
+              ) {
                 data.options[0].query = element.ans[0];
                 data.options[0].value = true;
               }
@@ -281,83 +287,121 @@ function Test() {
 
   return (
     <>
-      {isLoad ? <h1>Load</h1> : null}
-      <div className="countdown">
-        <CountDown
-          targetTime={dateTimeAfterLimit}
-          handleEndTest={handleEndTest}
-          updateHours={(e) => setHours(e)}
-          updateMinutes={(e) => setMinutes(e)}
-          updateSeconds={(e) => setSeconds(e)}
-        />
+      <QuizHeader>
+        <div className="countdown">
+          <CountDown
+            targetTime={dateTimeAfterLimit}
+            handleEndTest={handleEndTest}
+            updateHours={(e) => setHours(e)}
+            updateMinutes={(e) => setMinutes(e)}
+            updateSeconds={(e) => setSeconds(e)}
+          />
+        </div>
+      </QuizHeader>
+
+      <div className="container">
+        <div className="question-box">
+          <Questions question={question} updateQuestion={updateQuestion} />
+          <div className="pt-10 flex que-actions">
+            <div className="flex flex-1">
+              <button
+                type="button"
+                disabled={question?._id === testQuestions[0]?._id}
+                onClick={() => handlePreQuestion(question?._id)}
+                className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-dark"
+              >
+                <span className="btn-icon !mr-0">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 24L13.575 22.3875L4.3125 13.125H24V10.875H4.3125L13.575 1.6125L12 0L0 12L12 24Z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
+                </span>
+                <span className="btn-text hidden md:inline-flex ml-3">pre</span>
+              </button>
+              <button
+                type="submit"
+                disabled={
+                  question?._id ===
+                  testQuestions[testQuestions?.length - 1]?._id
+                }
+                onClick={() => handleNextQuestion(question?._id)}
+                className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-dark ml-3"
+              >
+                <span className="btn-text hidden md:inline-flex mr-3">
+                  next
+                </span>
+                <span className="btn-icon !mr-0 !ml-0">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 12L5.2125 11.1937L9.84375 6.5625H0V5.4375H9.84375L5.2125 0.80625L6 0L12 6L6 12Z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+            <div className="ml-auto">
+              <button
+                type="button"
+                className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-primary"
+                onClick={() => handleSubmitTest()}
+              >
+                <span className="btn-text">End Test</span>
+                <span className="btn-icon">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 12L5.2125 11.1937L9.84375 6.5625H0V5.4375H9.84375L5.2125 0.80625L6 0L12 6L6 12Z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="qno-listmain">
+      <div className="question-wrap">
         {testQuestions?.map((que, index) => (
           <div
             key={index}
             className={
-              que.options.some((data) => data.value)
-                ? "qno-item qno-done"
-                : "qno-item"
+              question?._id === que._id
+                ? "que-menu active"
+                : que.options.some((data) => data.value)
+                ? "que-menu done"
+                : "que-menu"
             }
           >
-            <div
+            <span
               className="qno-no"
               onClick={() => handleQuestion(que._id, index)}
             >
               {index + 1}
-            </div>
+            </span>
           </div>
         ))}
       </div>
-      <div className="testgroup-main">
-        <div className="testgroup-inner">
-          {" "}
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={() => handleSubmitTest()}
-          >
-            End Test
-          </button>
-          <Questions question={question} updateQuestion={updateQuestion} />
-          <div className="prev-next-group">
-            <button
-              type="button"
-              disabled={question?._id === testQuestions[0]?._id}
-              onClick={() => handlePreQuestion(question?._id)}
-              className="btn btn-primary"
-            >
-              pre
-            </button>
-            <button
-              type="submit"
-              disabled={
-                question?._id === testQuestions[testQuestions?.length - 1]?._id
-              }
-              onClick={() => handleNextQuestion(question?._id)}
-              className="btn btn-primary"
-            >
-              next
-            </button>
-          </div>
-        </div>
-      </div>
-      {/* {parseInt(question.id === testQuestions.length) ||
-      testQuestions.every((data) => {
-        return data.options.some((data) => {
-          return data.value;
-        });
-      }) ? (
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => handleSubmitTest()}
-        >
-          submit
-        </button>
-      ) : null} */}
     </>
   );
 }

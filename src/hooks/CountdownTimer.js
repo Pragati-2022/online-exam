@@ -1,10 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../components/context/UserContext";
-import { useNavigatorOnLine } from "./navigatorOnline";
 
 const useCountdown = (targetDate) => {
   const contextValue = useContext(UserContext);
-  const isOnline = useNavigatorOnLine();
 
   if (contextValue.newUser?.timer > 100000) {
     targetDate = contextValue.newUser?.timer;

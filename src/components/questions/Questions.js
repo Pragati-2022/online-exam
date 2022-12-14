@@ -1,11 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { QuestionContext } from "../context/QuestionsContext";
 
 function Questions(props) {
   const params = useParams();
   const navigate = useNavigate();
-  const questionContextValue = useContext(QuestionContext);
 
   useEffect(() => {
     if (
@@ -57,53 +55,70 @@ function Questions(props) {
 
   return (
     <>
-      {/* {console.log(props.question)} */}
       <div className="question-list-main">
-        <div className="q-id"> Question {props.question?.index + 1}</div>
-        <div className="q-title">{props.question?.question}</div>
+        <div className="que-no">
+          <span>{props.question?.index + 1}</span>
+        </div>
+        <div className="que-line">
+          <h3>{props.question?.question}</h3>
+        </div>
         {props.question?.marks ? (
           <div className="q-marks">Marks: {props.question?.marks}</div>
         ) : null}
-        <ul className="question-list">
-          {props.question?.options?.map((option, index) => {
-            return (
-              <li key={`${index}-${props.question?._id}`}>
-                {props.question?.optionType === "Multiple" ? (
-                  <input
-                    type="checkbox"
-                    id={`custom-checkbox-${index}-${props.question?._id}`}
-                    name={option?.title}
-                    checked={option?.value}
-                    onChange={(e) => handleOnChangeCheckbox(index, e)}
-                  />
-                ) : props.question?.optionType === "Query" 
-                ? (
-                  <textarea
-                    id={`custom-checkbox-${index}-${props.question?._id}`}
-                    name={option?._id}
-                    defaultValue={option?.query}
-                    onChange={(e) => handleOnChangeQuery(index, e, option._id)}
-                  ></textarea>
-                ) : (
-                  <input
-                    type="radio"
-                    value={option?.title}
-                    id={`custom-checkbox-${index}-${props.question?._id}`}
-                    name={option?.title}
-                    checked={option?.value}
-                    onChange={(e) => handleOnChangeRadio(index, e)}
-                  />
-                )}
-
-                <label
-                  htmlFor={`custom-checkbox-${index}-${props.question?._id}`}
+        <div className="que-options">
+          <div className="grid grid-cols-12 gap-4">
+            {props.question?.options?.map((option, index) => {
+              return (
+                <div
+                  className={
+                    props.question?.optionType === "Query"
+                      ? "col-span-12 sm:col-span-12"
+                      : "col-span-12 sm:col-span-6"
+                  }
+                  key={`${index}-${props.question?._id}`}
                 >
-                  {option?.title}
-                </label>
-              </li>
-            );
-          })}
-        </ul>
+                  <div className="que-option">
+                    {props.question?.optionType === "Multiple" ? (
+                      <input
+                        type="checkbox"
+                        id={`custom-checkbox-${index}-${props.question?._id}`}
+                        name={option?.title}
+                        checked={option?.value}
+                        onChange={(e) => handleOnChangeCheckbox(index, e)}
+                      />
+                    ) : props.question?.optionType === "Query" ? (
+                      <textarea
+                        id={`custom-checkbox-${index}-${props.question?._id}`}
+                        name={option?._id}
+                        defaultValue={option?.query}
+                        onChange={(e) =>
+                          handleOnChangeQuery(index, e, option._id)
+                        }
+                      ></textarea>
+                    ) : (
+                      <input
+                        type="radio"
+                        value={option?.title}
+                        id={`custom-checkbox-${index}-${props.question?._id}`}
+                        name={option?.title}
+                        checked={option?.value}
+                        onChange={(e) => handleOnChangeRadio(index, e)}
+                      />
+                    )}
+                    {props.question?.optionType !== "Query" && <span></span>}
+                    {props.question?.optionType !== "Query" && (
+                      <label
+                        htmlFor={`custom-checkbox-${index}-${props.question?._id}`}
+                      >
+                        {option?.title}
+                      </label>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </>
   );
