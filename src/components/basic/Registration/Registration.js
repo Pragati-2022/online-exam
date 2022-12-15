@@ -73,7 +73,7 @@ function Registration({ isAuthenticated }) {
         areaOfIntrest: areaOfInterestRef.current.value,
         futureGoal: futureGoalRef.current.value,
         currentAddress: currentAddressRef.current.value,
-        rdoc: cvRef.current.files[0].name,
+        rdoc: cvRef.current.files[0],
       };
 
       setIsLoad(true);
