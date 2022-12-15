@@ -1,6 +1,6 @@
 import "./App.css";
 import Registration from "./components/basic/Registration/Registration";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Navigate } from "react-router";
 import StartTest from "./components/start-test/StartTest";
@@ -13,13 +13,12 @@ import { useNavigatorOnLine } from "./hooks/navigatorOnline";
 
 function NotFound() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const contextValue = useContext(UserContext);
+
   useEffect(() => {
-    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
+    if (localStorage.getItem("userEmail") === "quiz") {
       navigate("/quiz");
     }
-  }, [contextValue.newUser, location?.pathname]);
+  }, []);
 
   return (
     <>
@@ -46,7 +45,6 @@ function AppRouter(props) {
   const isOnline = useNavigatorOnLine();
   const location = useLocation();
   const navigate = useNavigate();
-  const [isQuiz, setIsQuiz] = useState(false);
   const contextValue = useContext(UserContext);
 
   useEffect(() => {
@@ -64,13 +62,7 @@ function AppRouter(props) {
     if (location.pathname !== "/no_internet") {
       localStorage.setItem("currentPath", location.pathname);
     }
-
-    if (location.pathname.includes("quiz")) {
-      setIsQuiz(true);
-    } else {
-      setIsQuiz(false);
-    }
-  }, [isQuiz, location.pathname]);
+  }, [location.pathname]);
 
   return (
     <>
@@ -129,9 +121,7 @@ function AppRouter(props) {
             )
           }
         />
-        {/* <Route path="/quiz" element={<Quiz />} /> */}
         <Route path="/quiz/:id" element={<Quiz />} />
-        {/* <Route path="/result" element={<Result />} /> */}
         <Route path="/no_internet" element={<NoInternetConnection />} />
         <Route path="*" element={<NotFound status={404} />} />
       </Routes>

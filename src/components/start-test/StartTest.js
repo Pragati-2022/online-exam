@@ -14,10 +14,7 @@ function StartTest() {
   }, []);
 
   const handleStartTest = () => {
-    if (
-      contextValue.newUser?.email &&
-      contextValue.newUser?.testStatus !== "complete"
-    ) {
+    if (contextValue.newUser?.email) {
       navigate(`/quiz`);
       const addDetails = {
         testStatus: "inprogress",
