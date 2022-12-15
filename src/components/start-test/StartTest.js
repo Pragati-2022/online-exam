@@ -1,34 +1,17 @@
 import { useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
 function StartTest() {
   const navigate = useNavigate();
   const contextValue = useContext(UserContext);
-  const location = useLocation();
 
   useEffect(() => {
-    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
-      navigate("/quiz");
-    } else if (
-      contextValue.newUser?.testStatus?.toLowerCase() === "complete" ||
-      contextValue.newUser?.step?.toLowerCase() === "final"
-    ) {
-      navigate("/result");
-    }
-
-    if (
-      contextValue.newUser?.email &&
-      contextValue.newUser?.step === "enter_details"
-    ) {
-      let addDetails = {
-        step: "start_test",
-      };
-      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
-    } else if (!contextValue.newUser?.email) {
-      navigate("/");
-    }
-  }, [contextValue.newUser, location?.pathname]);
+    let addDetails = {
+      step: "start_test",
+    };
+    contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+  }, []);
 
   const handleStartTest = () => {
     if (
@@ -39,6 +22,7 @@ function StartTest() {
       const addDetails = {
         testStatus: "inprogress",
       };
+      localStorage.setItem("userEmail", "quiz");
       contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
     } else if (contextValue.newUser?.testStatus === "complete") {
       navigate(`/result`);

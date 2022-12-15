@@ -74,7 +74,7 @@ function AppRouter(props) {
 
   return (
     <>
-      {!isQuiz && <Header />}
+      {localStorage.getItem("userEmail") !== "quiz" && <Header />}
       <Routes>
         <Route
           exact
@@ -82,15 +82,56 @@ function AppRouter(props) {
           element={
             !localStorage.getItem("userEmail") ? (
               <Registration />
+            ) : localStorage.getItem("userEmail") === "quiz" ? (
+              <Navigate to="/quiz" />
+            ) : localStorage.getItem("userEmail") === "complete" ? (
+              <Navigate to="/result" />
             ) : (
               <Navigate to="/start_test" />
             )
           }
         />
-        <Route path="/start_test" element={<StartTest />} />
-        <Route path="/quiz" element={<Quiz />} />
+        <Route
+          path="/start_test"
+          element={
+            localStorage.getItem("userEmail") === "quiz" ? (
+              <Navigate to="/quiz" />
+            ) : localStorage.getItem("userEmail") === "complete" ? (
+              <Navigate to="/result" />
+            ) : !localStorage.getItem("userEmail") ? (
+              <Navigate to="/" />
+            ) : (
+              <StartTest />
+            )
+          }
+        />
+        <Route
+          path="/quiz"
+          element={
+            localStorage.getItem("userEmail") === "quiz" ? (
+              <Quiz />
+            ) : localStorage.getItem("userEmail") === "complete" ? (
+              <Navigate to="/result" />
+            ) : (
+              <Navigate to="/start_test" />
+            )
+          }
+        />
+        <Route
+          path="/result"
+          element={
+            localStorage.getItem("userEmail") === "quiz" ? (
+              <Navigate to="/quiz" />
+            ) : localStorage.getItem("userEmail") === "complete" ? (
+              <Result />
+            ) : (
+              <Navigate to="/start_test" />
+            )
+          }
+        />
+        {/* <Route path="/quiz" element={<Quiz />} /> */}
         <Route path="/quiz/:id" element={<Quiz />} />
-        <Route path="/result" element={<Result />} />
+        {/* <Route path="/result" element={<Result />} /> */}
         <Route path="/no_internet" element={<NoInternetConnection />} />
         <Route path="*" element={<NotFound status={404} />} />
       </Routes>

@@ -231,6 +231,7 @@ function Test() {
             questionAnswer: questionContextValue.question,
           },
         });
+        localStorage.setItem("userEmail", "complete");
         navigate(`/result`);
 
         let addDetails = {
@@ -270,111 +271,113 @@ function Test() {
           />
         </div>
       </QuizHeader>
-    <main className="main-wrap">
-      <div className="container">
-        <div className="question-box">
-          <Questions question={question} updateQuestion={updateQuestion} />
-          <div className="pt-10 flex que-actions">
-            <div className="flex flex-1">
-              <button
-                type="button"
-                disabled={question?._id === testQuestions[0]?._id}
-                onClick={() => handlePreQuestion(question?._id)}
-                className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-dark"
-              >
-                <span className="btn-icon !mr-0">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 24L13.575 22.3875L4.3125 13.125H24V10.875H4.3125L13.575 1.6125L12 0L0 12L12 24Z"
-                      fill="currentColor"
-                    ></path>
-                  </svg>
-                </span>
-                <span className="btn-text hidden md:inline-flex ml-3">pre</span>
-              </button>
-              <button
-                type="submit"
-                disabled={
-                  question?._id ===
-                  testQuestions[testQuestions?.length - 1]?._id
-                }
-                onClick={() => handleNextQuestion(question?._id)}
-                className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-dark ml-3"
-              >
-                <span className="btn-text hidden md:inline-flex mr-3">
-                  next
-                </span>
-                <span className="btn-icon !mr-0 !ml-0">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 12L5.2125 11.1937L9.84375 6.5625H0V5.4375H9.84375L5.2125 0.80625L6 0L12 6L6 12Z"
-                      fill="currentColor"
-                    ></path>
-                  </svg>
-                </span>
-              </button>
-            </div>
-            <div className="ml-auto">
-              <button
-                type="button"
-                className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-primary"
-                onClick={() => handleSubmitTest()}
-              >
-                <span className="btn-text">End Test</span>
-                <span className="btn-icon">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 12L5.2125 11.1937L9.84375 6.5625H0V5.4375H9.84375L5.2125 0.80625L6 0L12 6L6 12Z"
-                      fill="currentColor"
-                    ></path>
-                  </svg>
-                </span>
-              </button>
+      <main className="main-wrap">
+        <div className="container">
+          <div className="question-box">
+            <Questions question={question} updateQuestion={updateQuestion} />
+            <div className="pt-10 flex que-actions">
+              <div className="flex flex-1">
+                <button
+                  type="button"
+                  disabled={question?._id === testQuestions[0]?._id}
+                  onClick={() => handlePreQuestion(question?._id)}
+                  className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-dark"
+                >
+                  <span className="btn-icon !mr-0">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 24L13.575 22.3875L4.3125 13.125H24V10.875H4.3125L13.575 1.6125L12 0L0 12L12 24Z"
+                        fill="currentColor"
+                      ></path>
+                    </svg>
+                  </span>
+                  <span className="btn-text hidden md:inline-flex ml-3">
+                    pre
+                  </span>
+                </button>
+                <button
+                  type="submit"
+                  disabled={
+                    question?._id ===
+                    testQuestions[testQuestions?.length - 1]?._id
+                  }
+                  onClick={() => handleNextQuestion(question?._id)}
+                  className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-dark ml-3"
+                >
+                  <span className="btn-text hidden md:inline-flex mr-3">
+                    next
+                  </span>
+                  <span className="btn-icon !mr-0 !ml-0">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 12L5.2125 11.1937L9.84375 6.5625H0V5.4375H9.84375L5.2125 0.80625L6 0L12 6L6 12Z"
+                        fill="currentColor"
+                      ></path>
+                    </svg>
+                  </span>
+                </button>
+              </div>
+              <div className="ml-auto">
+                <button
+                  type="button"
+                  className="!px-[15px] md:!px-[30px] !py-[14px] md:!py-[18px] btn btn-primary"
+                  onClick={() => handleSubmitTest()}
+                >
+                  <span className="btn-text">End Test</span>
+                  <span className="btn-icon">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 12L5.2125 11.1937L9.84375 6.5625H0V5.4375H9.84375L5.2125 0.80625L6 0L12 6L6 12Z"
+                        fill="currentColor"
+                      ></path>
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="question-wrap">
-        {testQuestions?.map((que, index) => (
-          <div
-            key={index}
-            className={
-              question?._id === que._id
-                ? "que-menu active"
-                : que.options.some((data) => data.value)
-                ? "que-menu done"
-                : "que-menu"
-            }
-          >
-            <span
-              className="qno-no"
-              onClick={() => handleQuestion(que._id, index)}
+        <div className="question-wrap">
+          {testQuestions?.map((que, index) => (
+            <div
+              key={index}
+              className={
+                question?._id === que._id
+                  ? "que-menu active"
+                  : que.options.some((data) => data.value)
+                  ? "que-menu done"
+                  : "que-menu"
+              }
             >
-              {index + 1}
-            </span>
-          </div>
-        ))}
-      </div>
-    </main>
+              <span
+                className="qno-no"
+                onClick={() => handleQuestion(que._id, index)}
+              >
+                {index + 1}
+              </span>
+            </div>
+          ))}
+        </div>
+      </main>
     </>
   );
 }

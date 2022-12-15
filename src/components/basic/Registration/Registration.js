@@ -31,27 +31,14 @@ function Registration({ isAuthenticated }) {
   }, []);
 
   useEffect(() => {
-    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
-      navigate("/quiz");
-    } else if (
-      contextValue.newUser?.testStatus?.toLowerCase() === "complete" ||
-      contextValue.newUser?.step?.toLowerCase() === "final"
-    ) {
-      navigate("/result");
-    } else if (!contextValue.newUser?.email && !contextValue.newUser?.step) {
-      let addDetails = {
-        step: "enter_details",
-      };
-      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+    let addDetails = {
+      step: "enter_details",
+    };
+    contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
 
-      axios
-        .get(`${process.env.REACT_APP_API}/users/college/get`)
-        .then((res) => {
-          setCollegeNames(res?.data);
-        });
-    } else if (contextValue.newUser?.step === "start_test") {
-      navigate("/start_test");
-    }
+    axios.get(`${process.env.REACT_APP_API}/users/college/get`).then((res) => {
+      setCollegeNames(res?.data);
+    });
   }, []);
 
   const onSubmit = (e) => {
@@ -86,7 +73,7 @@ function Registration({ isAuthenticated }) {
         areaOfIntrest: areaOfInterestRef.current.value,
         futureGoal: futureGoalRef.current.value,
         currentAddress: currentAddressRef.current.value,
-        cv: cvRef.current.files[0].name,
+        rdoc: cvRef.current.files[0].name,
       };
 
       setIsLoad(true);
@@ -345,6 +332,7 @@ function Registration({ isAuthenticated }) {
                         className="form-control !h-[100px]"
                         type="file"
                         ref={cvRef}
+                        required
                       />
                       <label htmlFor="cv">Upload CV</label>
                     </div>
