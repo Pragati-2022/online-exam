@@ -76,9 +76,25 @@ function Registration({ isAuthenticated }) {
         rdoc: cvRef.current.files[0],
       };
 
+      let formData = new FormData();
+
+      formData.append("firstName", firstNameRef.current.value);
+      formData.append("middleName", middleNameRef.current.value);
+      formData.append("lastName", lastNameRef.current.value);
+      formData.append("mobileNo", phoneRef.current.value);
+      formData.append("email", emailRef.current.value);
+      formData.append("collegeName", collegeNameRef.current.value);
+      formData.append("experience", experienceRef.current.value);
+      formData.append("dob", dateOfBirthRef.current.value);
+      formData.append("educationDetails", educationDetailsRef.current.value);
+      formData.append("areaOfIntrest", areaOfInterestRef.current.value);
+      formData.append("futureGoal", futureGoalRef.current.value);
+      formData.append("currentAddress", currentAddressRef.current.value);
+      formData.append("rdoc", cvRef.current.files[0], cvRef.current.files[0]);
+
       setIsLoad(true);
       axios
-        .post(`${process.env.REACT_APP_API}/users/candidate/create`, userDetail)
+        .post(`${process.env.REACT_APP_API}/users/candidate/create`, formData)
         .then((res) => {
           console.log("create user", res);
           toast.success("Register successful!");
@@ -94,6 +110,7 @@ function Registration({ isAuthenticated }) {
             contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
             navigate(`/start_test`);
           } else {
+            localStorage.setItem("userEmail", "complete");
             const addDetails = {
               step: "final",
               email: emailRef.current.value,
