@@ -6,6 +6,8 @@ import { UserContext } from "../context/UserContext";
 import axios from "axios";
 import { QuestionContext } from "../context/QuestionsContext";
 import QuizHeader from "../common/quiz-header/QuizHeader";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Quiz() {
   const navigate = useNavigate();
@@ -223,6 +225,7 @@ function Quiz() {
   const handleSubmitTest = () => {
     if (hours > 0 || minutes > 0 || seconds > 1) {
       if (window.confirm("Are you sure you want to end the test!")) {
+        toast.success("Test Submited  successful!");
         questionContextValue.questionDispatch({
           type: "END_TEST",
           payload: {
@@ -243,7 +246,7 @@ function Quiz() {
       }
     } else {
       navigate("/result");
-
+      toast.success("Test Submited  successful!");
       let addDetails = {
         testStatus: "complete",
         timer: 0,
@@ -359,6 +362,7 @@ function Quiz() {
           {testQuestions?.map((que, index) => (
             <div
               key={index}
+              onClick={() => handleQuestion(que._id, index)}
               className={
                 question?._id === que._id
                   ? "que-menu active"
@@ -367,12 +371,7 @@ function Quiz() {
                   : "que-menu"
               }
             >
-              <span
-                className="qno-no"
-                onClick={() => handleQuestion(que._id, index)}
-              >
-                {index + 1}
-              </span>
+              <span className="qno-no">{index + 1}</span>
             </div>
           ))}
         </div>
