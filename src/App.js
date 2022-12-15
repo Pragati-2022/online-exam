@@ -1,19 +1,11 @@
 import "./App.css";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import { BrowserRouter } from "react-router-dom";
 import AppRouter from "./AppRouter";
 import { UserContext } from "./components/context/UserContext";
 import { QuestionContext } from "./components/context/QuestionsContext";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
-
-const initialState = {
-  step: "",
-  email: "",
-  pauseTime: "",
-  testStatus: "onhold",
-  result: null,
-};
 
 function reducer(state, action) {
   switch (action.type) {

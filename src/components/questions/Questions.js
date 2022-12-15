@@ -10,7 +10,7 @@ function Questions(props) {
       JSON.stringify(params) !== "{}" &&
       params["id"] !== props.question?.index
     ) {
-      navigate("/test/1");
+      navigate("/quiz/1");
     }
   }, [params["id"]]);
 

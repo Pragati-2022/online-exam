@@ -3,12 +3,11 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import CountDown from "../CountDown";
 import { UserContext } from "../context/UserContext";
-import { useNavigatorOnLine } from "../../hooks/navigatorOnline";
 import axios from "axios";
 import { QuestionContext } from "../context/QuestionsContext";
 import QuizHeader from "../common/quiz-header/QuizHeader";
 
-function Test() {
+function Quiz() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -119,44 +118,24 @@ function Test() {
   }, [contextValue.newUser?.candidateId]);
 
   useEffect(() => {
-    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
-      navigate("/quiz");
-    }
-
-    if (
-      contextValue.newUser?.email &&
-      contextValue.newUser?.step === "start_test" &&
-      contextValue.newUser?.testStatus?.toLowerCase() === "inprogress"
-    ) {
-      let addDetails = {
-        step: "quiz",
-      };
-      contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
-    }
-
-    if (!contextValue.newUser?.step) {
-      navigate("/");
-    } else if (contextValue.newUser?.step === "start_test") {
-      navigate("/start_test");
-    } else if (
-      contextValue.newUser?.email &&
-      contextValue.newUser?.testStatus?.toLowerCase() === "complete"
-    ) {
-      navigate(`/result`);
-    } else if (
-      contextValue.newUser?.testStatus?.toLowerCase() === "inprogress"
-    ) {
+    let addDetails = {
+      step: "quiz",
+    };
+    contextValue.dispatch({ type: "UPDATE_USER", payload: addDetails });
+    if (localStorage.getItem("userEmail") === "quiz")
       if (location.pathname.includes("quiz")) {
         navigate(location.pathname);
       } else {
         navigate("/quiz");
       }
+    else if (localStorage.getItem("userEmail") === "complete") {
+      navigate("/result");
     }
-  }, [contextValue.newUser, location?.pathname]);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!hours && !minutes && !seconds) return;
-    if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
+    if (localStorage.getItem("userEmail") === "quiz") {
       localStorage.setItem(
         "timer",
         JSON.stringify({ hours: hours, minutes: minutes, seconds: seconds })
@@ -382,4 +361,4 @@ function Test() {
   );
 }
 
-export default Test;
+export default Quiz;
