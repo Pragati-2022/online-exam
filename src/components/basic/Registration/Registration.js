@@ -6,7 +6,7 @@ import Spinner from "../../../images/ring-36.svg";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function Registration() {
+function Registration({ isAuthenticated }) {
   const navigate = useNavigate();
   const [isLoad, setIsLoad] = useState(false);
   const [collegeNames, setCollegeNames] = useState([]);
@@ -23,11 +23,12 @@ function Registration() {
   const areaOfInterestRef = useRef(null);
   const futureGoalRef = useRef(null);
   const currentAddressRef = useRef(null);
+  const cvRef = useRef(null);
   const contextValue = useContext(UserContext);
 
   useEffect(() => {
     contextValue.dispatch({ type: "GET_USER" });
-  });
+  }, []);
 
   useEffect(() => {
     if (contextValue.newUser?.testStatus?.toLowerCase() === "inprogress") {
@@ -37,7 +38,7 @@ function Registration() {
       contextValue.newUser?.step?.toLowerCase() === "final"
     ) {
       navigate("/result");
-    } else if (!contextValue.newUser?.step) {
+    } else if (!contextValue.newUser?.email && !contextValue.newUser?.step) {
       let addDetails = {
         step: "enter_details",
       };
@@ -51,7 +52,7 @@ function Registration() {
     } else if (contextValue.newUser?.step === "start_test") {
       navigate("/start_test");
     }
-  }, [contextValue, navigate]);
+  }, []);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -67,7 +68,8 @@ function Registration() {
       !educationDetailsRef.current.value ||
       !areaOfInterestRef.current.value ||
       !futureGoalRef.current.value ||
-      !currentAddressRef.current.value
+      !currentAddressRef.current.value ||
+      !cvRef.current.value
     ) {
       toast.warning("Details are required!");
     } else {
@@ -84,6 +86,7 @@ function Registration() {
         areaOfIntrest: areaOfInterestRef.current.value,
         futureGoal: futureGoalRef.current.value,
         currentAddress: currentAddressRef.current.value,
+        cv: cvRef.current.files[0].name,
       };
 
       setIsLoad(true);
@@ -129,6 +132,10 @@ function Registration() {
     } else {
       phoneRef.current.value = "";
     }
+  };
+
+  const handleCvUpload = (e) => {
+    console.log("file upload event", e.target.files[0]);
   };
 
   return (
@@ -328,6 +335,18 @@ function Registration() {
                         required
                       ></textarea>
                       <label htmlFor="futureGoal">Future Goal</label>
+                    </div>
+                  </div>
+
+                  <div className="col-span-12">
+                    <div className="floating-label">
+                      <input
+                        id="cv"
+                        className="form-control !h-[100px]"
+                        type="file"
+                        ref={cvRef}
+                      />
+                      <label htmlFor="cv">Upload CV</label>
                     </div>
                   </div>
 

@@ -2,6 +2,7 @@ import "./App.css";
 import Registration from "./components/basic/Registration/Registration";
 import React, { useContext, useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import StartTest from "./components/start-test/StartTest";
 import Quiz from "./components/quiz/Quiz";
 import Header from "./components/common/header/Header";
@@ -46,6 +47,11 @@ function AppRouter(props) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isQuiz, setIsQuiz] = useState(false);
+  const contextValue = useContext(UserContext);
+
+  useEffect(() => {
+    contextValue.dispatch({ type: "GET_USER" });
+  }, []);
 
   useEffect(() => {
     if (!isOnline) {
@@ -70,7 +76,17 @@ function AppRouter(props) {
     <>
       {!isQuiz && <Header />}
       <Routes>
-        <Route path="/" element={<Registration />} />
+        <Route
+          exact
+          path="/"
+          element={
+            !localStorage.getItem("userEmail") ? (
+              <Registration />
+            ) : (
+              <Navigate to="/start_test" />
+            )
+          }
+        />
         <Route path="/start_test" element={<StartTest />} />
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/quiz/:id" element={<Quiz />} />
